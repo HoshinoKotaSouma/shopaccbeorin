@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopaccbeorin.vn - Thiên đường acc Liên Quân TTX rẻ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+/* Popup Nội Quy */
+.popup-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  color: white;
+  position: relative;
+  animation: popupFadeIn 0.4s;
+}
+
+@keyframes popupFadeIn {
+  from {opacity: 0; transform: scale(0.8);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  color: #FD79A8;
+}
+
+.rules-text {
+  background-color: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.agree-btn {
+  background-color: #FD79A8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.agree-btn:hover {
+  background-color: white;
+  color: #FD79A8;
+}
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --light: #FD79A8;
+            --accent: #00CEC9;
+            --dark: #0984E3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #F5F6FA;
+            color: #2D3436;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: white;
+            margin-right: 1rem;
+        }
+        
+        .logo h1 {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0 1rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                          url('https://lienquan.garena.vn/wp-content/uploads/2024/05/51015.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            color: white;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background-color: var(--light);
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            background-color: white;
+            color: var(--light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Products */
+        .products-container {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            display: inline-block;
+            background-color: white;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            z-index: 0;
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .product:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--light);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .product-img {
+            height: 180px;
+            overflow: hidden;
+            background-color: #2D3436;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-img i {
+            font-size: 5rem;
+            color: var(--primary);
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #2D3436;
+            font-weight: bold;
+        }
+        
+        .product-desc {
+            font-size: 0.9rem;
+            color: #636E72;
+            margin-bottom: 1rem;
+            min-height: 60px;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-to-cart i {
+            margin-right: 0.5rem;
+        }
+        
+        .add-to-cart:hover {
+            background-color: var(--secondary);
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-column h3::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: white;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: white;
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.5rem 0;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .products {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-user-shield"></i>
+            <h1>Shopaccbeorin.vn</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Trang chủ</a></li>
+                <li><a href="#">Acc TTX</a></li>
+                <li><a href="#">Acc Game</a></li>
+                <li><a href="#">Bảng giá</a></li>
+                <li><a href="#">Liên hệ</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h2>Thiên đường acc TTX rẻ</h2>
+        <p>Uy tín - Chất lượng - Giá tốt nhất thị trường</p>
+        <button class="btn">Xem ngay</button>
+    </section>
+    
+    <section class="products-container">
+        <div class="section-title">
+            <h2>Account TTX bán chạy</h2>
+        </div>
+        
+        <div class="products">
+            <!-- Product 1 -->
+            <div class="product">
+                <span class="product-badge">Hot</span>
+                <div class="product-img">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Acc TTX VIP 10</h3>
+                    <div class="product-desc">
+                        Account VIP 10 đầy đủ skin, tướng, bảng ngọc full. Bảo hành vĩnh viễn.
+                    </div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-shield-alt"></i> Bảo hành: Vĩnh viễn</span>
+                        <span><i class="fas fa-check-circle"></i> Còn: 5 acc</span>
+                    </div>
+                    <div class="product-price">1.200.000đ</div>
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Mua ngay</button>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="product">
+                <div class="product-img">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Acc TTX VIP 9</h3>
+                    <div class="product-desc">
+                        Account VIP 9 skin đẹp, nhiều tướng hiếm. Bảo hành 6 tháng.
+                    </div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-shield-alt"></i> Bảo hành: 6 tháng</span>
+                        <span><i class="fas fa-check-circle"></i> Còn: 8 acc</span>
+                    </div>
+                    <div class="product-price">850.000đ</div>
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Mua ngay</button>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="product">
+                <span class="product-badge">-20%</span>
+                <div class="product-img">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Acc TTX VIP 8</h3>
+                    <div class="product-desc">
+                        Account VIP 8 giá rẻ, phù hợp cho người mới chơi. Bảo hành 3 tháng.
+                    </div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-shield-alt"></i> Bảo hành: 3 tháng</span>
+                        <span><i class="fas fa-check-circle"></i> Còn: 12 acc</span>
+                    </div>
+                    <div class="product-price">550.000đ <span style="text-decoration: line-through; color: #636E72; font-size: 1rem;">690.000đ</span></div>
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Mua ngay</button>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="product">
+                <div class="product-img">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Acc TTX VIP 7</h3>
+                    <div class="product-desc">
+                        Account VIP 7 giá cực rẻ, skin cơ bản. Bảo hành 1 tháng.
+                    </div>
+                    <div class="product-meta">
+                        <span><i class="fas fa-shield-alt"></i> Bảo hành: 1 tháng</span>
+                        <span><i class="fas fa-check-circle"></i> Còn: 15 acc</span>
+                    </div>
+                    <div class="product-price">350.000đ</div>
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Mua ngay</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Về chúng tôi</h3>
+                <p>Shopaccbeorin.vn - Thiên đường acc TTX giá rẻ, uy tín hàng đầu Việt Nam.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Danh mục</h3>
+                <ul>
+                    <li><a href="#">Acc TTX VIP</a></li>
+                    <li><a href="#">Acc TTX Rank</a></li>
+                    <li><a href="#">Acc Game Mobile</a></li>
+                    <li><a href="#">Acc Game PC</a></li>
+                    <li><a href="#">Dịch vụ game</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Chính sách</h3>
+                <ul>
+                    <li><a href="#">Chính sách bảo hành</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                    <li><a href="#">Quy định đổi trả</a></li>
+                    <li><a href="#">Bảo mật thông tin</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Liên hệ</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> support@shopaccbeorin.vn</li>
+                    <li><i class="fab fa-telegram"></i> t.me/shopaccbeorin</li>
+                    <li><i class="fas fa-phone"></i> 0987.654.321</li>
+                    <li><i class="fas fa-clock"></i> 8:00 - 22:00 hàng ngày</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Shopaccbeorin.vn. All rights reserved.</p>
+        </div>
+    </footer>
+<!-- Popup Nội Quy -->
+<div id="rulesPopup" class="popup-container">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <h2>NỘI QUY SHOP ACC</h2>
+    <img src="file:///Users/admin/Downloads/ChatGPT%20Image%20Aug%206,%202025,%2006_37_39%20PM.png" alt="Nội quy shop" style="max-width:100%; border-radius:8px; margin:10px 0;">
+    <div class="rules-text">
+      <p>1. Xem kĩ đi rồi hẵng mua nhé các tình iu</p>
+    </div>
+    <button class="agree-btn" onclick="closePopup()">TÔI ĐÃ HIỂU</button>
+  </div>
+</div>
+<script>
+// Luôn hiển thị popup khi trang được tải
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('rulesPopup').style.display = 'flex';
+});
+
+// Đóng popup (sẽ hiển thị lại khi reload)
+function closePopup() {
+  document.getElementById('rulesPopup').style.display = 'none';
+}
+
+// (Tùy chọn) Đóng bằng phím ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closePopup();
+  }
+});
+</script>
+</body>
+</html>
