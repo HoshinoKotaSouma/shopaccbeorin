@@ -6,6 +6,18 @@
     <title>Shopaccbeorin.vn - Thiên đường acc Liên Quân TTX rẻ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+/* Thêm vào thẻ <style> */
+nav button.logged-in {
+  background-color: var(--light);
+  padding: 5px 15px;
+  border-radius: 20px;
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 5px #00CEC9; }
+  to { box-shadow: 0 0 15px #FD79A8; }
+}
 .popup-content img {
   width: 100%;         /* Chiều rộng bằng popup */
   height: auto;        /* Tự động tính chiều cao giữ tỉ lệ 2:3 */
@@ -438,7 +450,55 @@
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
+        /* Thêm CSS cho trạng thái đăng nhập */
+nav ul li:last-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+nav ul li:last-child span {
+  color: white;
+  font-weight: bold;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nav ul li:last-child button {
+  background: var(--light);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+nav ul li:last-child button:hover {
+  transform: scale(1.05);
+}
     </style>
+</head>
+  <!-- ... Các thẻ meta khác ... -->
+  
+  <!-- Thêm Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  
+  <!-- Config Firebase (thay bằng config của bạn) -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAimD0XsW5AOGxZQmXhuUB1eeknOL0Q_dY",
+      authDomain: "shopaccrinfoxx-auth-f4e20.firebaseapp.com",
+      projectId: "shopaccrinfoxx-auth-f4e20",
+      storageBucket: "shopaccrinfoxx-auth-f4e20.appspot.com",
+      messagingSenderId: "1094639544967",
+      appId: "1:1094639544967:web:af4c55ace0738ae2e12622"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
     <header>
@@ -447,6 +507,15 @@
             <h1>Shopaccbeorin.vn</h1>
         </div>
         <nav>
+  <ul>
+    <li><a href="#">Trang chủ</a></li>
+    <li><a href="#">Acc TTX</a></li>
+    <li><a href="#">Acc Game</a></li>
+    <li><a href="#">Bảng giá</a></li>
+    <li><a href="#">Liên hệ</a></li>
+    <li><!-- Nút đăng nhập sẽ tự động thay đổi --></li>
+  </ul>
+</nav>
             <ul>
                 <li><a href="#">Trang chủ</a></li>
                 <li><a href="#">Acc TTX</a></li>
@@ -628,6 +697,265 @@ document.addEventListener('keydown', function(e) {
     closePopup();
   }
 });
+</script>
+<!-- Popup Đăng Nhập/Đăng Ký -->
+<div id="authPopup" class="popup-container" style="display: none;">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closeAuthPopup()">&times;</span>
+    <h2><i class="fas fa-user"></i> Tài khoản</h2>
+    
+    <div id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" class="auth-input">
+      <input type="password" id="loginPassword" placeholder="Mật khẩu" class="auth-input">
+      <button onclick="login()" class="agree-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+      <p style="text-align: center; margin-top: 15px;">
+        <a href="#" onclick="showRegisterForm()" style="color: white;">Chưa có tài khoản? Đăng ký</a>
+      </p>
+    </div>
+    
+    <div id="registerForm" style="display: none;">
+      <input type="email" id="registerEmail" placeholder="Email" class="auth-input">
+      <input type="password" id="registerPassword" placeholder="Mật khẩu" class="auth-input">
+      <button onclick="register()" class="agree-btn"><i class="fas fa-user-plus"></i> Đăng ký</button>
+      <p style="text-align: center; margin-top: 15px;">
+        <a href="#" onclick="showLoginForm()" style="color: white;">Đã có tài khoản? Đăng nhập</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Nút mở popup (thêm vào navigation) -->
+<script>
+  // Mở popup auth
+  function openAuthPopup() {
+    document.getElementById('authPopup').style.display = 'flex';
+    showLoginForm();
+  }
+
+  // Đóng popup
+  function closeAuthPopup() {
+    document.getElementById('authPopup').style.display = 'none';
+  }
+
+  // Chuyển sang form đăng ký
+  function showRegisterForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+  }
+
+  // Chuyển sang form đăng nhập
+  function showLoginForm() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+  }
+
+  // Hàm đăng nhập
+  async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      alert("Đăng nhập thành công!");
+      closeAuthPopup();
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  }
+
+  // Hàm đăng ký
+  async function register() {
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      alert("Đăng ký thành công!");
+      showLoginForm();
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  }
+</script>
+
+<style>
+  /* Thêm CSS cho popup auth */
+  .auth-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+  .auth-input::placeholder {
+    color: rgba(255,255,255,0.7);
+  }
+</style>
+// Theo dõi trạng thái đăng nhập
+firebase.auth().onAuthStateChanged((user) => {
+  const authBtn = document.querySelector('nav button');
+  
+  if (user) {
+    // Đã đăng nhập
+    authBtn.innerHTML = `<i class="fas fa-user-check"></i> ${user.email}`;
+    authBtn.onclick = () => {
+      if (confirm('Bạn muốn đăng xuất?')) {
+        firebase.auth().signOut();
+      }
+    };
+  } else {
+    // Chưa đăng nhập
+    authBtn.innerHTML = '<i class="fas fa-user"></i> Đăng nhập';
+    authBtn.onclick = openAuthPopup;
+  }
+});
+// Thêm vào hàm đăng nhập (phần login success)
+async function login() {
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    alert("Đăng nhập thành công!");
+    closeAuthPopup();
+    
+    // Tự động refresh trạng thái
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log("User đã đăng nhập:", user.email);
+      }
+    });
+  } catch (error) {
+    alert("Lỗi: " + error.message);
+  }
+}
+<script>
+  // Theo dõi trạng thái đăng nhập
+  firebase.auth().onAuthStateChanged((user) => {
+    const authBtn = document.querySelector('nav ul li:last-child');
+    
+    if (user) {
+      // Đã đăng nhập
+      authBtn.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span>${user.email}</span>
+          <button onclick="logout()" style="background: var(--light); color: white; border: none; padding: 5px 10px; border-radius: 20px; cursor: pointer;">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      `;
+    } else {
+      // Chưa đăng nhập
+      authBtn.innerHTML = `
+        <button onclick="openAuthPopup()" style="background: none; border: none; color: white; cursor: pointer;">
+          <i class="fas fa-user"></i> Đăng nhập
+        </button>
+      `;
+    }
+  });
+
+  // Hàm đăng xuất
+  function logout() {
+    firebase.auth().signOut()
+      .then(() => {
+        alert("Đã đăng xuất thành công!");
+      })
+      .catch((error) => {
+        alert("Lỗi khi đăng xuất: " + error.message);
+      });
+  }
+
+  // Sửa hàm đăng nhập
+  async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      alert("Đăng nhập thành công!");
+      closeAuthPopup();
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  }
+</script>
+<script>
+  // Hàm mở popup đăng nhập
+  function openAuthPopup() {
+    document.getElementById('authPopup').style.display = 'flex';
+    showLoginForm();
+  }
+
+  // Hàm đóng popup
+  function closeAuthPopup() {
+    document.getElementById('authPopup').style.display = 'none';
+  }
+
+  // Chuyển giữa form đăng nhập/đăng ký
+  function showRegisterForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+  }
+  
+  function showLoginForm() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+  }
+
+  // Hàm đăng nhập
+  async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      closeAuthPopup();
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  }
+
+  // Hàm đăng ký
+  async function register() {
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      alert("Đăng ký thành công!");
+      showLoginForm();
+    } catch (error) {
+      alert("Lỗi: " + error.message);
+    }
+  }
+
+  // Hàm đăng xuất
+  function logout() {
+    firebase.auth().signOut();
+  }
+
+  // Theo dõi trạng thái đăng nhập
+  firebase.auth().onAuthStateChanged((user) => {
+    const authLi = document.querySelector('nav ul li:last-child');
+    
+    if (user) {
+      // Đã đăng nhập
+      authLi.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span>${user.email.split('@')[0]}</span>
+          <button onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      `;
+    } else {
+      // Chưa đăng nhập
+      authLi.innerHTML = `
+        <button onclick="openAuthPopup()">
+          <i class="fas fa-user"></i> Đăng nhập
+        </button>
+      `;
+    }
+  });
 </script>
 </body>
 </html>
