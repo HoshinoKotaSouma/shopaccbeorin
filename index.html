@@ -6,6 +6,44 @@
     <title>Shopaccbeorin.vn - Thiên đường acc Liên Quân TTX rẻ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+/* Popup Nạp Thẻ */
+#depositPopup .popup-content {
+  max-width: 400px;
+}
+
+#depositResult {
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  display: none;
+}
+
+#depositResult.success {
+  background-color: rgba(0, 200, 83, 0.2);
+  color: #00C853;
+}
+
+#depositResult.error {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #FF0000;
+}
+
+/* Nút nạp thẻ trong menu */
+.deposit-btn {
+  background: linear-gradient(135deg, #00C853, #64DD17);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.deposit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
 /* Thêm vào thẻ <style> */
 nav button.logged-in {
   background-color: var(--light);
@@ -507,6 +545,16 @@ nav ul li:last-child button:hover {
             <h1>Shopaccbeorin.vn</h1>
         </div>
         <nav>
+<nav>
+  <ul>
+    <!-- Các mục menu khác -->
+    <li>
+      <button onclick="openDepositPopup()" class="deposit-btn">
+        <i class="fas fa-money-bill-wave"></i> Nạp thẻ
+      </button>
+    </li>
+  </ul>
+</nav>
   <ul>
     <li><a href="#">Trang chủ</a></li>
     <li><a href="#">Acc TTX</a></li>
@@ -957,5 +1005,169 @@ async function login() {
     }
   });
 </script>
+<!-- ... các phần HTML khác ... -->
+
+<!-- Popup Nạp Thẻ (thêm vào trước các popup khác) -->
+<div id="depositPopup" class="popup-container" style="display: none;">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closeDepositPopup()">&times;</span>
+    <h2><i class="fas fa-money-bill-wave"></i> Nạp Thẻ</h2>
+    
+    <select id="cardType" class="auth-input">
+      <option value="viettel">Viettel</option>
+      <option value="mobifone">Mobifone</option>
+      <option value="vinaphone">Vinaphone</option>
+      <option value="zing">Zing</option>
+      <option value="gate">Gate</option>
+    </select>
+    
+    <input type="text" id="cardSerial" placeholder="Số serial" class="auth-input">
+    <input type="text" id="cardPin" placeholder="Mã thẻ" class="auth-input">
+    <input type="number" id="cardAmount" placeholder="Mệnh giá (VNĐ)" class="auth-input">
+    
+    <div id="depositResult" style="margin: 15px 0; display: none;"></div>
+    
+    <button onclick="submitDeposit()" class="agree-btn">
+      <i class="fas fa-check"></i> Xác nhận nạp
+    </button>
+  </div>
+</div>
+
+<!-- Thêm đoạn script này vào CUỐI CÙNG, trước </body> -->
+<script>
+// Code xử lý nạp thẻ
+let depositAttempts = 0;
+const MAX_DEPOSIT_ATTEMPTS = 3;
+
+function openDepositPopup() {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    alert("Vui lòng đăng nhập để sử dụng tính năng nạp thẻ");
+    openAuthPopup();
+    return;
+  }
+  
+  document.getElementById('cardSerial').value = '';
+  document.getElementById('cardPin').value = '';
+  document.getElementById('cardAmount').value = '';
+  document.getElementById('depositResult').style.display = 'none';
+  
+  document.getElementById('depositPopup').style.display = 'flex';
+}
+
+function closeDepositPopup() {
+  document.getElementById('depositPopup').style.display = 'none';
+  depositAttempts = 0;
+}
+
+async function submitDeposit() {
+  const cardType = document.getElementById('cardType').value;
+  const cardSerial = document.getElementById('cardSerial').value.trim();
+  const cardPin = document.getElementById('cardPin').value.trim();
+  const cardAmount = document.getElementById('cardAmount').value;
+  
+  if (!cardSerial || !cardPin || !cardAmount) {
+    showDepositResult("Vui lòng điền đầy đủ thông tin", false);
+    return;
+  }
+  
+  if (isNaN(cardAmount) || cardAmount < 10000) {
+    showDepositResult("Mệnh giá thẻ không hợp lệ (tối thiểu 10,000đ)", false);
+    return;
+  }
+  
+  const btn = document.querySelector('#depositPopup .agree-btn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+  btn.disabled = true;
+  
+  try {
+    const result = await simulateCardDeposit(cardType, cardSerial, cardPin, cardAmount);
+    
+    if (result.success) {
+      await saveDepositHistory(
+        firebase.auth().currentUser.uid,
+        cardType,
+        cardSerial,
+        cardAmount,
+        result.transactionId
+      );
+      
+      showDepositResult(`Nạp thẻ thành công ${Number(cardAmount).toLocaleString()}đ`, true);
+      updateUserBalance(Number(cardAmount));
+    } else {
+      depositAttempts++;
+      if (depositAttempts >= MAX_DEPOSIT_ATTEMPTS) {
+        showDepositResult(`Thẻ sai quá ${MAX_DEPOSIT_ATTEMPTS} lần. Vui lòng thử lại sau!`, false);
+        setTimeout(closeDepositPopup, 3000);
+      } else {
+        showDepositResult(result.message || "Thẻ không hợp lệ hoặc đã được sử dụng", false);
+      }
+    }
+  } catch (error) {
+    showDepositResult("Lỗi hệ thống: " + error.message, false);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function showDepositResult(message, isSuccess) {
+  const resultDiv = document.getElementById('depositResult');
+  resultDiv.textContent = message;
+  resultDiv.className = isSuccess ? 'success' : 'error';
+  resultDiv.style.display = 'block';
+}
+
+function simulateCardDeposit(cardType, serial, pin, amount) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const isSuccess = Math.random() > 0.2;
+      
+      if (isSuccess) {
+        resolve({
+          success: true,
+          transactionId: 'TX' + Date.now(),
+          amount: amount,
+          message: 'Nạp thẻ thành công'
+        });
+      } else {
+        resolve({
+          success: false,
+          message: 'Thẻ không hợp lệ hoặc đã được sử dụng'
+        });
+      }
+    }, 1500);
+  });
+}
+
+async function saveDepositHistory(userId, cardType, cardSerial, amount, transactionId) {
+  if (!firebase.firestore) {
+    console.log("Firestore chưa được khởi tạo");
+    return;
+  }
+  
+  try {
+    await firebase.firestore().collection('deposits').add({
+      userId: userId,
+      cardType: cardType,
+      cardSerial: cardSerial,
+      amount: Number(amount),
+      transactionId: transactionId,
+      status: 'completed',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Lỗi khi lưu lịch sử nạp thẻ:", error);
+  }
+}
+
+function updateUserBalance(amount) {
+  console.log(`Cần cập nhật số dư tài khoản thêm ${amount}đ`);
+}
+</script>
+
+</body>
+</html>
 </body>
 </html>
