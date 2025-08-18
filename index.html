@@ -3,140 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopaccbeorin.vn - Thiên đường acc Liên Quân TTX rẻ</title>
+    <title>Shopaccbeorin.vn - Cửa hàng tài khoản game uy tín</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
-/* Popup Nạp Thẻ */
-#depositPopup .popup-content {
-  max-width: 400px;
-}
-
-#depositResult {
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  display: none;
-}
-
-#depositResult.success {
-  background-color: rgba(0, 200, 83, 0.2);
-  color: #00C853;
-}
-
-#depositResult.error {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #FF0000;
-}
-
-/* Nút nạp thẻ trong menu */
-.deposit-btn {
-  background: linear-gradient(135deg, #00C853, #64DD17);
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-}
-
-.deposit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-/* Thêm vào thẻ <style> */
-nav button.logged-in {
-  background-color: var(--light);
-  padding: 5px 15px;
-  border-radius: 20px;
-  animation: glow 1.5s infinite alternate;
-}
-
-@keyframes glow {
-  from { box-shadow: 0 0 5px #00CEC9; }
-  to { box-shadow: 0 0 15px #FD79A8; }
-}
-.popup-content img {
-  width: 100%;         /* Chiều rộng bằng popup */
-  height: auto;        /* Tự động tính chiều cao giữ tỉ lệ 2:3 */
-  max-height: 400px;   /* Ngăn ảnh quá cao (có thể điều chỉnh) */
-  object-fit: contain; /* Đảm bảo toàn bộ ảnh hiển thị */
-  border-radius: 10px; /* Bo góc */
-  margin: 0 auto 15px; /* Căn giữa + tạo khoảng cách với text */
-  display: block;      /* Loại bỏ khoảng trắng dưới ảnh */
-}
-/* Popup Nội Quy */
-.popup-container {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.7);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-
-.popup-content {
-  background: linear-gradient(135deg, #6C5CE7, #A29BFE);
-  padding: 20px;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 500px;
-  color: white;
-  position: relative;
-  animation: popupFadeIn 0.4s;
-}
-
-@keyframes popupFadeIn {
-  from {opacity: 0; transform: scale(0.8);}
-  to {opacity: 1; transform: scale(1);}
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 28px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.close-btn:hover {
-  color: #FD79A8;
-}
-
-.rules-text {
-  background-color: rgba(255,255,255,0.1);
-  padding: 15px;
-  border-radius: 10px;
-  margin: 10px 0;
-}
-
-.agree-btn {
-  background-color: #FD79A8;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  transition: 0.3s;
-}
-
-.agree-btn:hover {
-  background-color: white;
-  color: #FD79A8;
-}
         :root {
             --primary: #6C5CE7;
             --secondary: #A29BFE;
             --light: #FD79A8;
             --accent: #00CEC9;
             --dark: #0984E3;
+            --success: #00C853;
+            --error: #FF0000;
+            --warning: #FFC107;
         }
         
         * {
@@ -154,41 +38,104 @@ nav button.logged-in {
         /* Header */
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 1.5rem;
-            text-align: center;
+            padding: 1rem 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
         }
         
         .logo i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: white;
             margin-right: 1rem;
         }
         
         .logo h1 {
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 1.5rem;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 30px;
+            border: none;
+            padding-right: 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        /* User Controls */
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .cart-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--light);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
         
         nav ul {
             display: flex;
             justify-content: center;
             list-style: none;
+            flex-wrap: wrap;
+            background-color: rgba(0,0,0,0.1);
+            padding: 0.5rem;
         }
         
         nav li {
-            margin: 0 1rem;
+            margin: 0.3rem 0.8rem;
         }
         
         nav a {
@@ -198,6 +145,7 @@ nav button.logged-in {
             padding: 0.5rem 1rem;
             border-radius: 20px;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
         
         nav a:hover {
@@ -386,6 +334,127 @@ nav button.logged-in {
             background-color: var(--secondary);
         }
         
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-sidebar.open {
+            right: 0;
+        }
+        
+        .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #636E72;
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+        
+        .cart-item-img i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+        
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #FF0000;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            background-color: var(--secondary);
+        }
+        
         /* Footer */
         footer {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -469,8 +538,366 @@ nav button.logged-in {
             font-size: 0.9rem;
         }
         
+        /* Popup Styles */
+        .popup-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .popup-content {
+            background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            color: white;
+            position: relative;
+            animation: popupFadeIn 0.4s;
+        }
+        
+        @keyframes popupFadeIn {
+            from {opacity: 0; transform: scale(0.8);}
+            to {opacity: 1; transform: scale(1);}
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #FD79A8;
+        }
+        
+        .rules-text {
+            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .agree-btn {
+            background-color: #FD79A8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.3s;
+        }
+        
+        .agree-btn:hover {
+            background-color: white;
+            color: #FD79A8;
+        }
+        
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .auth-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success);
+        }
+        
+        .notification.error {
+            background-color: var(--error);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Deposit History Styles */
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .history-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .history-item.success {
+            border-left: 4px solid #00C853;
+        }
+        
+        .history-item.failed {
+            border-left: 4px solid #FF0000;
+        }
+        
+        .history-info {
+            flex: 1;
+        }
+        
+        .history-amount {
+            font-weight: bold;
+            color: #00CEC9;
+            font-size: 1.1rem;
+        }
+        
+        .history-date {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .history-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+        
+        .loading-history {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        /* Deposit Button */
+        .deposit-btn {
+            background: linear-gradient(135deg, #00C853, #64DD17);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Checkout Page */
+        .checkout-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .checkout-steps {
+            display: flex;
+            margin-bottom: 2rem;
+            justify-content: space-between;
+        }
+        
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: bold;
+        }
+        
+        .step.active .step-number {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .step-title {
+            font-size: 0.9rem;
+            color: #636E72;
+        }
+        
+        .step.active .step-title {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .step.completed .step-title {
+            color: var(--success);
+        }
+        
+        .step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 60%;
+            right: -60%;
+            height: 2px;
+            background-color: #ddd;
+            z-index: -1;
+        }
+        
+        .step.completed:not(:last-child)::after {
+            background-color: var(--success);
+        }
+        
+        .checkout-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .checkout-summary {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .place-order-btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .place-order-btn:hover {
+            background-color: var(--secondary);
+        }
+        
         /* Responsive */
+        @media (max-width: 992px) {
+            .cart-sidebar {
+                width: 350px;
+            }
+        }
+        
         @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .search-container {
+                margin: 1rem 0;
+                max-width: 100%;
+            }
+            
             nav ul {
                 flex-direction: column;
                 align-items: center;
@@ -487,56 +914,53 @@ nav button.logged-in {
             .products {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .cart-sidebar.open {
+                right: 0;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
         }
-        /* Thêm CSS cho trạng thái đăng nhập */
-nav ul li:last-child {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-nav ul li:last-child span {
-  color: white;
-  font-weight: bold;
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-nav ul li:last-child button {
-  background: var(--light);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-nav ul li:last-child button:hover {
-  transform: scale(1.05);
-}
+        
+        @media (max-width: 576px) {
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.5rem;
+            }
+            
+            .popup-content {
+                padding: 15px;
+            }
+            
+            .checkout-steps {
+                flex-wrap: wrap;
+            }
+            
+            .step {
+                flex: 0 0 50%;
+                margin-bottom: 1rem;
+            }
+            
+            .step:not(:last-child)::after {
+                display: none;
+            }
+        }
     </style>
-</head>
-  <!-- ... Các thẻ meta khác ... -->
-  
-  <!-- Thêm Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-  
-  <!-- Config Firebase (thay bằng config của bạn) -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAimD0XsW5AOGxZQmXhuUB1eeknOL0Q_dY",
-      authDomain: "shopaccrinfoxx-auth-f4e20.firebaseapp.com",
-      projectId: "shopaccrinfoxx-auth-f4e20",
-      storageBucket: "shopaccrinfoxx-auth-f4e20.appspot.com",
-      messagingSenderId: "1094639544967",
-      appId: "1:1094639544967:web:af4c55ace0738ae2e12622"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
 </head>
 <body>
     <header>
@@ -544,44 +968,63 @@ nav ul li:last-child button:hover {
             <i class="fas fa-user-shield"></i>
             <h1>Shopaccbeorin.vn</h1>
         </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Tìm kiếm tài khoản...">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-controls">
+            <button class="cart-btn" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </button>
+            <div id="authButton"></div>
+        </div>
     </header>
-<nav>
-  <ul>
-    <li><a href="#">Trang chủ</a></li>
-    <li><a href="#">Acc TTX</a></li>
-    <li><a href="#">Acc Game</a></li>
-    <li><a href="#">Bảng giá</a></li>
-    <li><a href="#">Liên hệ</a></li>
-    <li>
-      <button onclick="openDepositPopup()" class="deposit-btn">
-        <i class="fas fa-money-bill-wave"></i> Nạp thẻ
-      </button>
-    </li>
-    <li><!-- Nút đăng nhập sẽ tự động thay đổi --></li>
-  </ul>
-</nav>
+    
+    <nav>
+        <ul>
+            <li><a href="#" class="active">Trang chủ</a></li>
+            <li><a href="#">Acc TTX</a></li>
+            <li><a href="#">Acc Game</a></li>
+            <li><a href="#">Bảng giá</a></li>
+            <li><a href="#">Liên hệ</a></li>
+            <li>
+                <button onclick="openDepositPopup()" class="deposit-btn">
+                    <i class="fas fa-money-bill-wave"></i> Nạp thẻ
+                </button>
+            </li>
+            <li>
+                <button onclick="openDepositHistoryPopup()" class="deposit-btn">
+                    <i class="fas fa-history"></i> Lịch sử
+                </button>
+            </li>
+        </ul>
+    </nav>
+    
     <section class="hero">
-        <h2>Thiên đường acc TTX rẻ</h2>
+        <h2>Thiên đường tài khoản game giá rẻ</h2>
         <p>Uy tín - Chất lượng - Giá tốt nhất thị trường</p>
         <button class="btn">Xem ngay</button>
     </section>
     
     <section class="products-container">
         <div class="section-title">
-            <h2>Account TTX bán chạy</h2>
+            <h2>Tài khoản bán chạy</h2>
         </div>
         
         <div class="products">
             <!-- Product 1 -->
-            <div class="product">
+            <div class="product" data-id="1" data-name="Acc VIP 10" data-price="1200000">
                 <span class="product-badge">Hot</span>
                 <div class="product-img">
                     <i class="fas fa-crown"></i>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title">Acc TTX VIP 10</h3>
+                    <h3 class="product-title">Acc VIP 10</h3>
                     <div class="product-desc">
-                        Account VIP 10 đầy đủ skin, tướng, bảng ngọc full. Bảo hành vĩnh viễn.
+                        Tài khoản VIP 10 đầy đủ skin, tướng, bảng ngọc full. Bảo hành vĩnh viễn.
                     </div>
                     <div class="product-meta">
                         <span><i class="fas fa-shield-alt"></i> Bảo hành: Vĩnh viễn</span>
@@ -593,14 +1036,14 @@ nav ul li:last-child button:hover {
             </div>
             
             <!-- Product 2 -->
-            <div class="product">
+            <div class="product" data-id="2" data-name="Acc VIP 9" data-price="850000">
                 <div class="product-img">
                     <i class="fas fa-gem"></i>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title">Acc TTX VIP 9</h3>
+                    <h3 class="product-title">Acc VIP 9</h3>
                     <div class="product-desc">
-                        Account VIP 9 skin đẹp, nhiều tướng hiếm. Bảo hành 6 tháng.
+                        Tài khoản VIP 9 skin đẹp, nhiều tướng hiếm. Bảo hành 6 tháng.
                     </div>
                     <div class="product-meta">
                         <span><i class="fas fa-shield-alt"></i> Bảo hành: 6 tháng</span>
@@ -612,15 +1055,15 @@ nav ul li:last-child button:hover {
             </div>
             
             <!-- Product 3 -->
-            <div class="product">
+            <div class="product" data-id="3" data-name="Acc VIP 8" data-price="550000">
                 <span class="product-badge">-20%</span>
                 <div class="product-img">
                     <i class="fas fa-medal"></i>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title">Acc TTX VIP 8</h3>
+                    <h3 class="product-title">Acc VIP 8</h3>
                     <div class="product-desc">
-                        Account VIP 8 giá rẻ, phù hợp cho người mới chơi. Bảo hành 3 tháng.
+                        Tài khoản VIP 8 giá rẻ, phù hợp cho người mới chơi. Bảo hành 3 tháng.
                     </div>
                     <div class="product-meta">
                         <span><i class="fas fa-shield-alt"></i> Bảo hành: 3 tháng</span>
@@ -632,14 +1075,14 @@ nav ul li:last-child button:hover {
             </div>
             
             <!-- Product 4 -->
-            <div class="product">
+            <div class="product" data-id="4" data-name="Acc VIP 7" data-price="350000">
                 <div class="product-img">
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title">Acc TTX VIP 7</h3>
+                    <h3 class="product-title">Acc VIP 7</h3>
                     <div class="product-desc">
-                        Account VIP 7 giá cực rẻ, skin cơ bản. Bảo hành 1 tháng.
+                        Tài khoản VIP 7 giá cực rẻ, skin cơ bản. Bảo hành 1 tháng.
                     </div>
                     <div class="product-meta">
                         <span><i class="fas fa-shield-alt"></i> Bảo hành: 1 tháng</span>
@@ -652,11 +1095,33 @@ nav ul li:last-child button:hover {
         </div>
     </section>
     
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Giỏ hàng của bạn</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be added here dynamically -->
+            <div class="empty-cart" style="text-align: center; padding: 2rem; color: #636E72;">
+                <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                <p>Giỏ hàng của bạn đang trống</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Tổng cộng:</span>
+                <span id="cartTotal">0đ</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Thanh toán</button>
+        </div>
+    </div>
+    
     <footer>
         <div class="footer-content">
             <div class="footer-column">
                 <h3>Về chúng tôi</h3>
-                <p>Shopaccbeorin.vn - Thiên đường acc TTX giá rẻ, uy tín hàng đầu Việt Nam.</p>
+                <p>Shopaccbeorin.vn - Cửa hàng tài khoản game uy tín hàng đầu Việt Nam.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-telegram"></i></a>
@@ -668,10 +1133,10 @@ nav ul li:last-child button:hover {
             <div class="footer-column">
                 <h3>Danh mục</h3>
                 <ul>
-                    <li><a href="#">Acc TTX VIP</a></li>
-                    <li><a href="#">Acc TTX Rank</a></li>
-                    <li><a href="#">Acc Game Mobile</a></li>
-                    <li><a href="#">Acc Game PC</a></li>
+                    <li><a href="#">Tài khoản VIP</a></li>
+                    <li><a href="#">Tài khoản Rank</a></li>
+                    <li><a href="#">Tài khoản Mobile</a></li>
+                    <li><a href="#">Tài khoản PC</a></li>
                     <li><a href="#">Dịch vụ game</a></li>
                 </ul>
             </div>
@@ -702,458 +1167,1084 @@ nav ul li:last-child button:hover {
             <p>&copy; 2023 Shopaccbeorin.vn. All rights reserved.</p>
         </div>
     </footer>
-<!-- Popup Nội Quy -->
-<div id="rulesPopup" class="popup-container">
-  <div class="popup-content">
-    <span class="close-btn" onclick="closePopup()">&times;</span>
-    <h2>NỘI QUY SHOP ACC</h2>
-<img src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/92cd46aa-d325-4f98-b079-7d893fb2d528.jpeg" alt="Nội quy">
-    <div class="rules-text">
-      <p>1. Xem kĩ đi rồi hẵng mua nhé các tình iu</p>
-    </div>
-    <button class="agree-btn" onclick="closePopup()">TÔI ĐÃ HIỂU</button>
-  </div>
-</div>
-<script>
-// Luôn hiển thị popup khi trang được tải
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('rulesPopup').style.display = 'flex';
-});
 
-// Đóng popup (sẽ hiển thị lại khi reload)
-function closePopup() {
-  document.getElementById('rulesPopup').style.display = 'none';
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Thông báo</span>
+    </div>
+
+    <!-- Popup Nội Quy -->
+<div id="rulesPopup" class="popup-container">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2><i class="fas fa-exclamation-triangle"></i> NỘI QUY SHOP ACC TTX</h2>
+        
+        <div class="rules-text" style="background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 10px 0;">
+            <!-- Phần 1 -->
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.3);">
+                <h3 style="color: var(--light); margin-bottom: 10px;"><i class="fas fa-user-lock"></i> THÔNG TIN TÀI KHOẢN</h3>
+                <p><i class="fas fa-check" style="color: var(--success);"></i> Acc TTX không thay được thông tin hay password, chỉ cần tk/mk là vào chơi được ngay</p>
+            </div>
+            
+            <!-- Phần 2 -->
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.3);">
+                <h3 style="color: var(--light); margin-bottom: 10px;"><i class="fas fa-user-shield"></i> CHÍNH SÁCH BẢO HÀNH</h3>
+                <p><i class="fas fa-check" style="color: var(--success);"></i> Acc chủ OFF: Bao log đầu (bao gồm cả trường hợp log trúng chủ đang ON)</p>
+                <p><i class="fas fa-check" style="color: var(--success);"></i> Acc chủ ON: Không bao log trúng chủ (chủ ON thì chắc chắn sẽ có lúc đang chơi)</p>
+                <p><i class="fas fa-check" style="color: var(--success);"></i> Chỉ bao UT từ 70 trở xuống, acc UT cao hơn vui lòng tự canh</p>
+            </div>
+            
+            <!-- Phần 3 -->
+            <div>
+                <h3 style="color: var(--light); margin-bottom: 10px;"><i class="fas fa-ban" style="color: var(--error);"></i> LƯU Ý QUAN TRỌNG</h3>
+                <p><i class="fas fa-exclamation-circle" style="color: var(--warning);"></i> KHÔNG hỗ trợ hoàn/đổi acc nếu:</p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Mua acc chủ ON mà log trúng chủ đang chơi</li>
+                    <li>Acc UT > 70 mà không log được</li>
+                    <li>Đã đăng nhập thành công mà đòi hoàn tiền</li>
+                </ul>
+                <p style="margin-top: 10px; color: var(--light); font-style: italic;">Nếu nói về các khoản trên chúng tôi sẽ không trả lời. Cảm ơn!</p>
+            </div>
+        </div>
+        
+        <button class="agree-btn" onclick="closePopup()">
+            <i class="fas fa-check-circle"></i> TÔI ĐÃ HIỂU VÀ ĐỒNG Ý
+        </button>
+    </div>
+</div>
+    <!-- Popup Đăng Nhập/Đăng Ký -->
+    <div id="authPopup" class="popup-container" style="display: none;">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeAuthPopup()">&times;</span>
+            <h2><i class="fas fa-user"></i> Tài khoản</h2>
+            
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" class="auth-input">
+                <input type="password" id="loginPassword" placeholder="Mật khẩu" class="auth-input">
+                <button onclick="login()" class="agree-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showRegisterForm()" style="color: white;">Chưa có tài khoản? Đăng ký</a> | 
+                    <a href="#" onclick="showResetPasswordForm()" style="color: white;">Quên mật khẩu?</a>
+                </p>
+            </div>
+            
+            <div id="registerForm" style="display: none;">
+                <input type="email" id="registerEmail" placeholder="Email" class="auth-input">
+                <input type="password" id="registerPassword" placeholder="Mật khẩu (tối thiểu 6 ký tự)" class="auth-input">
+                <input type="password" id="registerConfirmPassword" placeholder="Xác nhận mật khẩu" class="auth-input">
+                <button onclick="register()" class="agree-btn"><i class="fas fa-user-plus"></i> Đăng ký</button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showLoginForm()" style="color: white;">Đã có tài khoản? Đăng nhập</a>
+                </p>
+            </div>
+            
+            <div id="resetPasswordForm" style="display: none;">
+                <p style="margin-bottom: 15px;">Nhập email để nhận liên kết đặt lại mật khẩu</p>
+                <input type="email" id="resetEmail" placeholder="Email" class="auth-input">
+                <button onclick="sendResetPasswordEmail()" class="agree-btn"><i class="fas fa-paper-plane"></i> Gửi liên kết</button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showLoginForm()" style="color: white;">Quay lại đăng nhập</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Nạp Thẻ -->
+    <div id="depositPopup" class="popup-container" style="display: none;">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeDepositPopup()">&times;</span>
+            <h2><i class="fas fa-money-bill-wave"></i> Nạp Thẻ</h2>
+            
+            <select id="cardType" class="auth-input">
+                <option value="viettel">Viettel</option>
+                <option value="mobifone">Mobifone</option>
+                <option value="vinaphone">Vinaphone</option>
+                <option value="zing">Zing</option>
+                <option value="gate">Gate</option>
+            </select>
+            
+            <input type="text" id="cardSerial" placeholder="Số serial" class="auth-input">
+            <input type="text" id="cardPin" placeholder="Mã thẻ" class="auth-input">
+            <input type="number" id="cardAmount" placeholder="Mệnh giá (VNĐ)" class="auth-input">
+            
+            <div id="depositResult" style="margin: 15px 0; display: none;"></div>
+            
+            <button onclick="submitDeposit()" class="agree-btn">
+                <i class="fas fa-check"></i> Xác nhận nạp
+            </button>
+        </div>
+    </div>
+
+    <!-- Popup Lịch Sử Nạp Thẻ -->
+    <div id="depositHistoryPopup" class="popup-container" style="display: none;">
+        <div class="popup-content" style="max-width: 600px;">
+            <span class="close-btn" onclick="closeDepositHistoryPopup()">&times;</span>
+            <h2><i class="fas fa-history"></i> Lịch Sử Nạp Thẻ</h2>
+            
+            <div class="filter-options">
+                <select id="historyFilter" class="auth-input" onchange="loadDepositHistory()">
+                    <option value="all">Tất cả</option>
+                    <option value="today">Hôm nay</option>
+                    <option value="week">Tuần này</option>
+                    <option value="month">Tháng này</option>
+                </select>
+            </div>
+            
+            <div id="depositHistoryList" class="history-list">
+                <div class="loading-history">
+                    <i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử...
+                </div>
+            </div>
+            
+            <button onclick="closeDepositHistoryPopup()" class="agree-btn">
+                <i class="fas fa-times"></i> Đóng
+            </button>
+        </div>
+    </div>
+
+    <!-- Checkout Page (hidden by default) -->
+    <div id="checkoutPage" style="display: none;">
+        <div class="checkout-container">
+            <div class="checkout-steps">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Thông tin thanh toán</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Xác nhận đơn hàng</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Hoàn tất</div>
+                </div>
+            </div>
+            
+            <div class="checkout-form" id="checkoutForm">
+                <h2>Thông tin thanh toán</h2>
+                <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="checkoutEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" id="phoneNumber" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phương thức thanh toán</label>
+                    <select class="form-control" id="paymentMethod">
+                        <option value="card">Thẻ cào</option>
+                        <option value="bank">Chuyển khoản ngân hàng</option>
+                        <option value="momo">Ví điện tử MoMo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ghi chú (nếu có)</label>
+                    <textarea class="form-control" id="orderNote" rows="3"></textarea>
+                </div>
+                
+                <div class="checkout-summary">
+                    <h3>Đơn hàng của bạn</h3>
+                    <div id="checkoutItems">
+                        <!-- Items will be added here -->
+                    </div>
+                    <div class="summary-total">
+                        <span>Tổng cộng:</span>
+                        <span id="checkoutTotal">0đ</span>
+                    </div>
+                </div>
+                
+                <button class="place-order-btn" onclick="placeOrder()">Đặt hàng</button>
+            </div>
+            
+            <div class="checkout-form" id="orderConfirmation" style="display: none; text-align: center;">
+                <h2>Đơn hàng của bạn đã được tiếp nhận!</h2>
+                <i class="fas fa-check-circle" style="font-size: 5rem; color: var(--success); margin: 2rem 0;"></i>
+                <p>Mã đơn hàng: <strong id="orderId">#123456</strong></p>
+                <p>Cảm ơn bạn đã mua hàng tại Shopaccbeorin.vn</p>
+                <p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận đơn hàng.</p>
+                <button class="btn" onclick="backToHome()" style="margin-top: 2rem;">Quay về trang chủ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Thêm vào phần script
+function showProductPage() {
+    document.getElementById('acc-reg-ngon-bo-re').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
-// (Tùy chọn) Đóng bằng phím ESC
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closePopup();
-  }
+function hideProductPage() {
+    document.getElementById('acc-reg-ngon-bo-re').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    window.history.pushState({}, '', '/');
+}
+
+// Xử lý khi URL thay đổi
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#acc-reg-ngon-bo-re') {
+        showProductPage();
+    } else {
+        hideProductPage();
+    }
 });
-</script>
-<!-- Popup Đăng Nhập/Đăng Ký -->
-<div id="authPopup" class="popup-container" style="display: none;">
-  <div class="popup-content">
-    <span class="close-btn" onclick="closeAuthPopup()">&times;</span>
-    <h2><i class="fas fa-user"></i> Tài khoản</h2>
-    
-    <div id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email" class="auth-input">
-      <input type="password" id="loginPassword" placeholder="Mật khẩu" class="auth-input">
-      <button onclick="login()" class="agree-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
-      <p style="text-align: center; margin-top: 15px;">
-        <a href="#" onclick="showRegisterForm()" style="color: white;">Chưa có tài khoản? Đăng ký</a>
-      </p>
-    </div>
-    
-    <div id="registerForm" style="display: none;">
-      <input type="email" id="registerEmail" placeholder="Email" class="auth-input">
-      <input type="password" id="registerPassword" placeholder="Mật khẩu" class="auth-input">
-      <button onclick="register()" class="agree-btn"><i class="fas fa-user-plus"></i> Đăng ký</button>
-      <p style="text-align: center; margin-top: 15px;">
-        <a href="#" onclick="showLoginForm()" style="color: white;">Đã có tài khoản? Đăng nhập</a>
-      </p>
-    </div>
-  </div>
-</div>
 
-<!-- Nút mở popup (thêm vào navigation) -->
-<script>
-  // Mở popup auth
-  function openAuthPopup() {
-    document.getElementById('authPopup').style.display = 'flex';
-    showLoginForm();
-  }
+// Kiểm tra khi load trang
+if (window.location.hash === '#acc-reg-ngon-bo-re') {
+    showProductPage();
+}
 
-  // Đóng popup
-  function closeAuthPopup() {
-    document.getElementById('authPopup').style.display = 'none';
-  }
+// Thêm sự kiện cho nút "XEM NGAY" (nếu có)
+document.querySelectorAll('.btn-view-acc-reg').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.hash = 'acc-reg-ngon-bo-re';
+    });
+});
+// Thêm vào file main.js hoặc <script> cuối trang
+function showProductPage() {
+    document.getElementById('acc-reg-ngon-bo-re').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Chặn scroll trang chính
+}
 
-  // Chuyển sang form đăng ký
-  function showRegisterForm() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-  }
+function hideProductPage() {
+    document.getElementById('acc-reg-ngon-bo-re').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    window.history.pushState({}, '', '/'); // Reset URL
+}
 
-  // Chuyển sang form đăng nhập
-  function showLoginForm() {
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'block';
-  }
+// Xử lý khi URL thay đổi
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#acc-reg-ngon-bo-re') {
+        showProductPage();
+    } else {
+        hideProductPage();
+    }
+});
 
-  // Hàm đăng nhập
-  async function login() {
+// Kiểm tra ngay khi load trang
+if (window.location.hash === '#acc-reg-ngon-bo-re') {
+    showProductPage();
+}
+
+// Thêm sự kiện cho nút "XEM NGAY"
+document.querySelector('promo-section .btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.hash = 'acc-reg-ngon-bo-re';
+});
+        // Khởi tạo Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAimD0XsW5AOGxZQmXhuUB1eeknOL0Q_dY",
+            authDomain: "shopaccrinfoxx-auth-f4e20.firebaseapp.com",
+            projectId: "shopaccrinfoxx-auth-f4e20",
+            storageBucket: "shopaccrinfoxx-auth-f4e20.appspot.com",
+            messagingSenderId: "1094639544967",
+            appId: "1:1094639544967:web:af4c55ace0738ae2e12622"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // ===== PHẦN XỬ LÝ GIỎ HÀNG =====
+        let cart = [];
+        
+        // Load cart from localStorage
+        function loadCart() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartUI();
+            }
+        }
+        
+        // Save cart to localStorage
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+        
+        // Add to cart
+        function addToCart(productElement) {
+            const id = productElement.getAttribute('data-id');
+            const name = productElement.getAttribute('data-name');
+            const price = parseInt(productElement.getAttribute('data-price'));
+            
+            // Check if product already in cart
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id,
+                    name,
+                    price,
+                    quantity: 1
+                });
+            }
+            
+            saveCart();
+            showNotification('success', 'Đã thêm vào giỏ hàng');
+        }
+        
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            showNotification('success', 'Đã xóa khỏi giỏ hàng');
+        }
+        
+        // Update cart quantity
+        function updateCartQuantity(productId, quantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = quantity;
+                saveCart();
+            }
+        }
+        
+        // Calculate cart total
+        function calculateCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+        
+        // Update cart UI
+        function updateCartUI() {
+            const cartItemsElement = document.getElementById('cartItems');
+            const cartCountElement = document.querySelector('.cart-count');
+            const cartTotalElement = document.getElementById('cartTotal');
+            
+            // Update cart count
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCountElement.textContent = totalItems;
+            
+            // Update cart items list
+            if (cart.length === 0) {
+                cartItemsElement.innerHTML = `
+                    <div class="empty-cart" style="text-align: center; padding: 2rem; color: #636E72;">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>Giỏ hàng của bạn đang trống</p>
+                    </div>
+                `;
+                cartTotalElement.textContent = '0đ';
+                return;
+            }
+            
+            let html = '';
+            cart.forEach(item => {
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-img">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">${item.price.toLocaleString('vi-VN')}đ</div>
+                            <div>
+                                <input type="number" min="1" value="${item.quantity}" 
+                                    onchange="updateCartQuantity('${item.id}', this.value)" 
+                                    style="width: 50px; padding: 3px; text-align: center;">
+                            </div>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            cartItemsElement.innerHTML = html;
+            cartTotalElement.textContent = `${calculateCartTotal().toLocaleString('vi-VN')}đ`;
+        }
+        
+        // Toggle cart sidebar
+        function toggleCart() {
+            document.querySelector('.cart-sidebar').classList.toggle('open');
+        }
+        
+        // Checkout function
+        function checkout() {
+            const user = firebase.auth().currentUser;
+            
+            if (!user) {
+                showNotification('error', 'Vui lòng đăng nhập để thanh toán');
+                closeAuthPopup();
+                openAuthPopup();
+                return;
+            }
+            
+            if (cart.length === 0) {
+                showNotification('error', 'Giỏ hàng của bạn đang trống');
+                return;
+            }
+            
+            // Hide main content and show checkout page
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('nav').style.display = 'none';
+            document.querySelector('.hero').style.display = 'none';
+            document.querySelector('.products-container').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+            document.getElementById('checkoutPage').style.display = 'block';
+            
+            // Populate checkout items
+            const checkoutItemsElement = document.getElementById('checkoutItems');
+            let html = '';
+            
+            cart.forEach(item => {
+                html += `
+                    <div class="summary-item">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span>${(item.price * item.quantity).toLocaleString('vi-VN')}đ</span>
+                    </div>
+                `;
+            });
+            
+            checkoutItemsElement.innerHTML = html;
+            document.getElementById('checkoutTotal').textContent = `${calculateCartTotal().toLocaleString('vi-VN')}đ`;
+            
+            // Set user email if logged in
+            document.getElementById('checkoutEmail').value = user.email || '';
+        }
+        
+        // Place order function
+        function placeOrder() {
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('checkoutEmail').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const orderNote = document.getElementById('orderNote').value;
+            
+            if (!fullName || !email || !phoneNumber) {
+                showNotification('error', 'Vui lòng điền đầy đủ thông tin');
+                return;
+            }
+            
+            // Generate order ID
+            const orderId = 'ORD' + Date.now();
+            
+            // Save order to Firestore
+            db.collection('orders').add({
+                orderId,
+                userId: firebase.auth().currentUser.uid,
+                items: cart,
+                total: calculateCartTotal(),
+                customerInfo: {
+                    fullName,
+                    email,
+                    phoneNumber
+                },
+                paymentMethod,
+                orderNote,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                // Show confirmation
+                document.getElementById('checkoutForm').style.display = 'none';
+                document.getElementById('orderConfirmation').style.display = 'block';
+                document.getElementById('orderId').textContent = orderId;
+                
+                // Update steps
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step2').classList.add('completed');
+                document.getElementById('step3').classList.add('active');
+                
+                // Clear cart
+                cart = [];
+                saveCart();
+            }).catch(error => {
+                showNotification('error', 'Lỗi khi đặt hàng: ' + error.message);
+            });
+        }
+        
+        // Back to home function
+        function backToHome() {
+            // Show main content and hide checkout page
+            document.querySelector('header').style.display = 'flex';
+            document.querySelector('nav').style.display = 'block';
+            document.querySelector('.hero').style.display = 'flex';
+            document.querySelector('.products-container').style.display = 'block';
+            document.querySelector('footer').style.display = 'block';
+            document.getElementById('checkoutPage').style.display = 'none';
+        }
+        
+        // ===== PHẦN XỬ LÝ THÔNG BÁO =====
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notification.className = `notification ${type} show`;
+            notificationText.textContent = message;
+            
+            // Set icon based on type
+            const icon = notification.querySelector('i');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            } else {
+                icon.className = 'fas fa-info-circle';
+            }
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ===== PHẦN XỬ LÝ ĐĂNG NHẬP/ĐĂNG KÝ =====
+        function openAuthPopup() {
+            document.getElementById('authPopup').style.display = 'flex';
+            showLoginForm();
+        }
+
+        function closeAuthPopup() {
+            document.getElementById('authPopup').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+        
+        function showResetPasswordForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'block';
+        }
+
+async function login() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      alert("Đăng nhập thành công!");
-      closeAuthPopup();
-    } catch (error) {
-      alert("Lỗi: " + error.message);
+    if (!email || !password) {
+        showNotification('error', 'Vui lòng nhập đầy đủ email và mật khẩu');
+        return;
     }
-  }
-
-  // Hàm đăng ký
-  async function register() {
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
     
     try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
-      alert("Đăng ký thành công!");
-      showLoginForm();
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        showNotification('success', 'Đăng nhập thành công');
+        closeAuthPopup();
     } catch (error) {
-      alert("Lỗi: " + error.message);
+        showNotification('error', 'Lỗi đăng nhập: ' + error.message);
     }
-  }
-</script>
+}
+async function register() {
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    
+    if (!email || !password || !confirmPassword) {
+        showNotification('error', 'Vui lòng nhập đầy đủ thông tin');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showNotification('error', 'Mật khẩu xác nhận không khớp');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showNotification('error', 'Mật khẩu phải có ít nhất 6 ký tự');
+        return;
+    }
+    
+    try {
+        await firebase.auth().createUserWithEmailAndPassword(email, password);
+        showNotification('success', 'Đăng ký thành công!');
+        showLoginForm();
+    } catch (error) {
+        showNotification('error', 'Lỗi đăng ký: ' + error.message);
+    }
+}
+        async function sendResetPasswordEmail() {
+            const email = document.getElementById('resetEmail').value;
+            
+            if (!email) {
+                showNotification('error', 'Vui lòng nhập email');
+                return;
+            }
+            
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showNotification('success', 'Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email.');
+                showLoginForm();
+            } catch (error) {
+                showNotification('error', 'Lỗi: ' + error.message);
+            }
+        }
+
+        function logout() {
+            firebase.auth().signOut();
+            showNotification('success', 'Đã đăng xuất');
+        }
+
+        // ===== PHẦN XỬ LÝ NẠP THẺ =====
+        let depositAttempts = 0;
+        const MAX_DEPOSIT_ATTEMPTS = 3;
+
+        function openDepositPopup() {
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showNotification('error', 'Vui lòng đăng nhập để sử dụng tính năng nạp thẻ');
+                openAuthPopup();
+                return;
+            }
+            
+            document.getElementById('cardSerial').value = '';
+            document.getElementById('cardPin').value = '';
+            document.getElementById('cardAmount').value = '';
+            document.getElementById('depositResult').style.display = 'none';
+            
+            document.getElementById('depositPopup').style.display = 'flex';
+        }
+
+        function closeDepositPopup() {
+            document.getElementById('depositPopup').style.display = 'none';
+            depositAttempts = 0;
+        }
+
+        async function submitDeposit() {
+            const cardType = document.getElementById('cardType').value;
+            const cardSerial = document.getElementById('cardSerial').value.trim();
+            const cardPin = document.getElementById('cardPin').value.trim();
+            const cardAmount = document.getElementById('cardAmount').value;
+            
+            if (!cardSerial || !cardPin || !cardAmount) {
+                showDepositResult("Vui lòng điền đầy đủ thông tin", false);
+                return;
+            }
+            
+            if (isNaN(cardAmount)) {
+                showDepositResult("Mệnh giá thẻ phải là số", false);
+                return;
+            }
+            
+            if (Number(cardAmount) < 10000) {
+                showDepositResult("Mệnh giá thẻ tối thiểu 10,000đ", false);
+                return;
+            }
+            
+            const btn = document.querySelector('#depositPopup .agree-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+            
+            try {
+                const result = await simulateCardDeposit(cardType, cardSerial, cardPin, cardAmount);
+                
+                if (result.success) {
+                    // Lưu lịch sử vào Firestore
+                    await db.collection('deposits').add({
+                        userId: firebase.auth().currentUser.uid,
+                        cardType: cardType,
+                        cardSerial: cardSerial,
+                        amount: Number(cardAmount),
+                        transactionId: result.transactionId,
+                        status: 'completed',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showDepositResult(`Nạp thẻ thành công ${Number(cardAmount).toLocaleString('vi-VN')}đ`, true);
+                    showNotification('success', `Nạp thẻ thành công ${Number(cardAmount).toLocaleString('vi-VN')}đ`);
+                    
+                    // Cập nhật ngay lịch sử nếu popup đang mở
+                    if (document.getElementById('depositHistoryPopup').style.display === 'flex') {
+                        loadDepositHistory();
+                    }
+                } else {
+                    depositAttempts++;
+                    if (depositAttempts >= MAX_DEPOSIT_ATTEMPTS) {
+                        showDepositResult(`Thẻ sai quá ${MAX_DEPOSIT_ATTEMPTS} lần. Vui lòng thử lại sau!`, false);
+                        setTimeout(closeDepositPopup, 3000);
+                    } else {
+                        showDepositResult(result.message || "Thẻ không hợp lệ hoặc đã được sử dụng", false);
+                    }
+                }
+            } catch (error) {
+                showDepositResult("Lỗi hệ thống: " + error.message, false);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function showDepositResult(message, isSuccess) {
+            const resultDiv = document.getElementById('depositResult');
+            resultDiv.textContent = message;
+            resultDiv.style.color = isSuccess ? '#00C853' : '#FF0000';
+            resultDiv.style.display = 'block';
+        }
+
+        function simulateCardDeposit(cardType, serial, pin, amount) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const isSuccess = Math.random() > 0.2;
+                    
+                    if (isSuccess) {
+                        resolve({
+                            success: true,
+                            transactionId: 'TX' + Date.now(),
+                            amount: amount,
+                            message: 'Nạp thẻ thành công'
+                        });
+                    } else {
+                        resolve({
+                            success: false,
+                            message: 'Thẻ không hợp lệ hoặc đã được sử dụng'
+                        });
+                    }
+                }, 1500);
+            });
+        }
+
+        // ===== PHẦN XỬ LÝ LỊCH SỬ NẠP THẺ =====
+        function openDepositHistoryPopup() {
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showNotification('error', 'Vui lòng đăng nhập để xem lịch sử nạp thẻ');
+                openAuthPopup();
+                return;
+            }
+            
+            document.getElementById('depositHistoryPopup').style.display = 'flex';
+            loadDepositHistory();
+        }
+
+        function closeDepositHistoryPopup() {
+            document.getElementById('depositHistoryPopup').style.display = 'none';
+        }
+
+        async function loadDepositHistory() {
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+            
+            const filter = document.getElementById('historyFilter').value;
+            const historyList = document.getElementById('depositHistoryList');
+            
+            historyList.innerHTML = '<div class="loading-history"><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử...</div>';
+            
+            try {
+                let query = db.collection('deposits')
+                    .where('userId', '==', user.uid)
+                    .orderBy('createdAt', 'desc');
+                
+                // Áp dụng bộ lọc thời gian
+                if (filter !== 'all') {
+                    const now = new Date();
+                    let startDate = new Date();
+                    
+                    if (filter === 'today') {
+                        startDate.setHours(0, 0, 0, 0);
+                    } else if (filter === 'week') {
+                        startDate.setDate(startDate.getDate() - 7);
+                    } else if (filter === 'month') {
+                        startDate.setMonth(startDate.getMonth() - 1);
+                    }
+                    
+                    query = query.where('createdAt', '>=', startDate);
+                }
+                
+                const querySnapshot = await query.get();
+                
+                if (querySnapshot.empty) {
+                    historyList.innerHTML = '<div class="no-history">Không có giao dịch nào</div>';
+                    return;
+                }
+                
+                let html = '';
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += createHistoryItemHtml(data);
+                });
+                
+                historyList.innerHTML = html;
+            } catch (error) {
+                console.error("Lỗi tải lịch sử:", error);
+                historyList.innerHTML = `<div class="error-history">Lỗi tải lịch sử: ${error.message}</div>`;
+            }
+        }
+
+        function createHistoryItemHtml(data) {
+            const date = data.createdAt?.toDate() || new Date();
+            const formattedDate = date.toLocaleString('vi-VN');
+            const formattedAmount = data.amount.toLocaleString('vi-VN') + 'đ';
+            
+            return `
+                <div class="history-item ${data.status || 'success'}">
+                    <div class="history-info">
+                        <span class="history-type">${getCardTypeName(data.cardType)}</span>
+                        <span>${data.transactionId || ''}</span>
+                        <div class="history-date">${formattedDate}</div>
+                    </div>
+                    <div class="history-amount">+${formattedAmount}</div>
+                </div>
+            `;
+        }
+
+        function getCardTypeName(type) {
+            const types = {
+                'viettel': 'Viettel',
+                'mobifone': 'Mobifone',
+                'vinaphone': 'Vinaphone',
+                'zing': 'Zing',
+                'gate': 'Gate'
+            };
+            return types[type] || type;
+        }
+
+        // ===== PHẦN XỬ LÝ TRẠNG THÁI ĐĂNG NHẬP =====
+        function updateAuthUI(user) {
+            const authLi = document.querySelector('#authButton');
+            
+            if (user) {
+                // Đã đăng nhập
+                authLi.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>${user.email.split('@')[0]}</span>
+                        <button onclick="logout()" style="background: var(--light); color: white; border: none; padding: 5px 10px; border-radius: 20px; cursor: pointer;">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Chưa đăng nhập
+                authLi.innerHTML = `
+                    <button onclick="openAuthPopup()" style="background: none; border: none; color: white; cursor: pointer;">
+                        <i class="fas fa-user"></i> Đăng nhập
+                    </button>
+                `;
+            }
+        }
+
+        // Theo dõi trạng thái đăng nhập
+        firebase.auth().onAuthStateChanged(user => {
+            updateAuthUI(user);
+        });
+
+        // ===== PHẦN XỬ LÝ POPUP NỘI QUY =====
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('rulesPopup').style.display = 'flex';
+            loadCart();
+            
+            // Add event listeners for add to cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productElement = this.closest('.product');
+                    addToCart(productElement);
+                });
+            });
+            
+            // Search functionality
+            document.querySelector('.search-btn').addEventListener('click', function() {
+                const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+                if (!searchTerm) return;
+                
+                const products = document.querySelectorAll('.product');
+                let found = false;
+                
+                products.forEach(product => {
+                    const title = product.querySelector('.product-title').textContent.toLowerCase();
+                    const desc = product.querySelector('.product-desc').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                        product.style.display = 'block';
+                        found = true;
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+                
+                if (!found) {
+                    showNotification('warning', 'Không tìm thấy sản phẩm phù hợp');
+                }
+            });
+            
+            // Allow search on Enter key
+            document.querySelector('.search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.querySelector('.search-btn').click();
+                }
+            });
+        });
+
+        function closePopup() {
+            document.getElementById('rulesPopup').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+                closeAuthPopup();
+                closeDepositPopup();
+                closeDepositHistoryPopup();
+            }
+        });
+    </script>
+</body>
+<!-- Thêm section này vào cuối <body> -->
+<section id="acc-reg-ngon-bo-re" class="product-page" style="display: none;">
+    <div class="container">
+        <button onclick="hideProductPage()" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </button>
+        
+        <div class="section-title">
+            <h2>ACC REG NGON BỔ RẺ</h2>
+            <p>Chọn lọc những tài khoản chất lượng nhất</p>
+        </div>
+        
+        <div class="products-grid">
+            <!-- Sản phẩm 1 -->
+            <div class="product-card">
+                <div class="product-badge">HOT</div>
+                <img src="assets/images/acc1.jpg" alt="Acc VIP 10">
+                <div class="product-info">
+                    <h3>Acc VIP 10 Full Skin</h3>
+                    <div class="price">500.000đ</div>
+                    <button class="buy-btn">MUA NGAY</button>
+                </div>
+            </div>
+            
+            <!-- Thêm các sản phẩm khác -->
+        </div>
+    </div>
+</section>
 
 <style>
-  /* Thêm CSS cho popup auth */
-  .auth-input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-  }
-  .auth-input::placeholder {
-    color: rgba(255,255,255,0.7);
-  }
+    /* CSS cho trang sản phẩm */
+    .product-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    .back-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .product-card {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--light);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
 </style>
-// Theo dõi trạng thái đăng nhập
-firebase.auth().onAuthStateChanged((user) => {
-  const authBtn = document.querySelector('nav button');
-  
-  if (user) {
-    // Đã đăng nhập
-    authBtn.innerHTML = `<i class="fas fa-user-check"></i> ${user.email}`;
-    authBtn.onclick = () => {
-      if (confirm('Bạn muốn đăng xuất?')) {
-        firebase.auth().signOut();
-      }
-    };
-  } else {
-    // Chưa đăng nhập
-    authBtn.innerHTML = '<i class="fas fa-user"></i> Đăng nhập';
-    authBtn.onclick = openAuthPopup;
-  }
-});
-// Thêm vào hàm đăng nhập (phần login success)
-async function login() {
-  try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
-    alert("Đăng nhập thành công!");
-    closeAuthPopup();
-    
-    // Tự động refresh trạng thái
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log("User đã đăng nhập:", user.email);
-      }
-    });
-  } catch (error) {
-    alert("Lỗi: " + error.message);
-  }
+/* CSS cho trang Acc Reg Ngon Bổ Rẻ */
+.product-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+    display: none;
 }
-<script>
-  // Theo dõi trạng thái đăng nhập
-  firebase.auth().onAuthStateChanged((user) => {
-    const authBtn = document.querySelector('nav ul li:last-child');
-    
-    if (user) {
-      // Đã đăng nhập
-      authBtn.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span>${user.email}</span>
-          <button onclick="logout()" style="background: var(--light); color: white; border: none; padding: 5px 10px; border-radius: 20px; cursor: pointer;">
-            <i class="fas fa-sign-out-alt"></i>
-          </button>
-        </div>
-      `;
-    } else {
-      // Chưa đăng nhập
-      authBtn.innerHTML = `
-        <button onclick="openAuthPopup()" style="background: none; border: none; color: white; cursor: pointer;">
-          <i class="fas fa-user"></i> Đăng nhập
+
+.back-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.product-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+<!-- Trang Acc Reg Ngon Bổ Rẻ -->
+<section id="acc-reg-ngon-bo-re" class="product-page" style="display: none;">
+    <div class="container">
+        <button onclick="hideProductPage()" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại
         </button>
-      `;
-    }
-  });
-
-  // Hàm đăng xuất
-  function logout() {
-    firebase.auth().signOut()
-      .then(() => {
-        alert("Đã đăng xuất thành công!");
-      })
-      .catch((error) => {
-        alert("Lỗi khi đăng xuất: " + error.message);
-      });
-  }
-
-  // Sửa hàm đăng nhập
-  async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      alert("Đăng nhập thành công!");
-      closeAuthPopup();
-    } catch (error) {
-      alert("Lỗi: " + error.message);
-    }
-  }
-</script>
-<script>
-  // Hàm mở popup đăng nhập
-  function openAuthPopup() {
-    document.getElementById('authPopup').style.display = 'flex';
-    showLoginForm();
-  }
-
-  // Hàm đóng popup
-  function closeAuthPopup() {
-    document.getElementById('authPopup').style.display = 'none';
-  }
-
-  // Chuyển giữa form đăng nhập/đăng ký
-  function showRegisterForm() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-  }
-  
-  function showLoginForm() {
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'block';
-  }
-
-  // Hàm đăng nhập
-  async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      closeAuthPopup();
-    } catch (error) {
-      alert("Lỗi: " + error.message);
-    }
-  }
-
-  // Hàm đăng ký
-  async function register() {
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    
-    try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
-      alert("Đăng ký thành công!");
-      showLoginForm();
-    } catch (error) {
-      alert("Lỗi: " + error.message);
-    }
-  }
-
-  // Hàm đăng xuất
-  function logout() {
-    firebase.auth().signOut();
-  }
-
-  // Theo dõi trạng thái đăng nhập
-  firebase.auth().onAuthStateChanged((user) => {
-    const authLi = document.querySelector('nav ul li:last-child');
-    
-    if (user) {
-      // Đã đăng nhập
-      authLi.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span>${user.email.split('@')[0]}</span>
-          <button onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i>
-          </button>
+        
+        <div class="section-title">
+            <h2>ACC REG NGON BỔ RẺ</h2>
+            <p>Chọn lọc những tài khoản chất lượng nhất</p>
         </div>
-      `;
-    } else {
-      // Chưa đăng nhập
-      authLi.innerHTML = `
-        <button onclick="openAuthPopup()">
-          <i class="fas fa-user"></i> Đăng nhập
-        </button>
-      `;
-    }
-  });
-</script>
-<!-- ... các phần HTML khác ... -->
-
-<!-- Popup Nạp Thẻ (thêm vào trước các popup khác) -->
-<div id="depositPopup" class="popup-container" style="display: none;">
-  <div class="popup-content">
-    <span class="close-btn" onclick="closeDepositPopup()">&times;</span>
-    <h2><i class="fas fa-money-bill-wave"></i> Nạp Thẻ</h2>
-    
-    <select id="cardType" class="auth-input">
-      <option value="viettel">Viettel</option>
-      <option value="mobifone">Mobifone</option>
-      <option value="vinaphone">Vinaphone</option>
-      <option value="zing">Zing</option>
-      <option value="gate">Gate</option>
-    </select>
-    
-    <input type="text" id="cardSerial" placeholder="Số serial" class="auth-input">
-    <input type="text" id="cardPin" placeholder="Mã thẻ" class="auth-input">
-    <input type="number" id="cardAmount" placeholder="Mệnh giá (VNĐ)" class="auth-input">
-    
-    <div id="depositResult" style="margin: 15px 0; display: none;"></div>
-    
-    <button onclick="submitDeposit()" class="agree-btn">
-      <i class="fas fa-check"></i> Xác nhận nạp
-    </button>
-  </div>
-</div>
-
-<!-- Thêm đoạn script này vào CUỐI CÙNG, trước </body> -->
-<script>
-// Code xử lý nạp thẻ
-let depositAttempts = 0;
-const MAX_DEPOSIT_ATTEMPTS = 3;
-
-function openDepositPopup() {
-  const user = firebase.auth().currentUser;
-  if (!user) {
-    alert("Vui lòng đăng nhập để sử dụng tính năng nạp thẻ");
-    openAuthPopup();
-    return;
-  }
-  
-  document.getElementById('cardSerial').value = '';
-  document.getElementById('cardPin').value = '';
-  document.getElementById('cardAmount').value = '';
-  document.getElementById('depositResult').style.display = 'none';
-  
-  document.getElementById('depositPopup').style.display = 'flex';
-}
-
-function closeDepositPopup() {
-  document.getElementById('depositPopup').style.display = 'none';
-  depositAttempts = 0;
-}
-
-async function submitDeposit() {
-  const cardType = document.getElementById('cardType').value;
-  const cardSerial = document.getElementById('cardSerial').value.trim();
-  const cardPin = document.getElementById('cardPin').value.trim();
-  const cardAmount = document.getElementById('cardAmount').value;
-  
-  if (!cardSerial || !cardPin || !cardAmount) {
-    showDepositResult("Vui lòng điền đầy đủ thông tin", false);
-    return;
-  }
-  
-  if (isNaN(cardAmount) || cardAmount < 10000) {
-    showDepositResult("Mệnh giá thẻ không hợp lệ (tối thiểu 10,000đ)", false);
-    return;
-  }
-  
-  const btn = document.querySelector('#depositPopup .agree-btn');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-  btn.disabled = true;
-  
-  try {
-    const result = await simulateCardDeposit(cardType, cardSerial, cardPin, cardAmount);
-    
-    if (result.success) {
-      await saveDepositHistory(
-        firebase.auth().currentUser.uid,
-        cardType,
-        cardSerial,
-        cardAmount,
-        result.transactionId
-      );
-      
-      showDepositResult(`Nạp thẻ thành công ${Number(cardAmount).toLocaleString()}đ`, true);
-      updateUserBalance(Number(cardAmount));
-    } else {
-      depositAttempts++;
-      if (depositAttempts >= MAX_DEPOSIT_ATTEMPTS) {
-        showDepositResult(`Thẻ sai quá ${MAX_DEPOSIT_ATTEMPTS} lần. Vui lòng thử lại sau!`, false);
-        setTimeout(closeDepositPopup, 3000);
-      } else {
-        showDepositResult(result.message || "Thẻ không hợp lệ hoặc đã được sử dụng", false);
-      }
-    }
-  } catch (error) {
-    showDepositResult("Lỗi hệ thống: " + error.message, false);
-  } finally {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-function showDepositResult(message, isSuccess) {
-  const resultDiv = document.getElementById('depositResult');
-  resultDiv.textContent = message;
-  resultDiv.className = isSuccess ? 'success' : 'error';
-  resultDiv.style.display = 'block';
-}
-
-function simulateCardDeposit(cardType, serial, pin, amount) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const isSuccess = Math.random() > 0.2;
-      
-      if (isSuccess) {
-        resolve({
-          success: true,
-          transactionId: 'TX' + Date.now(),
-          amount: amount,
-          message: 'Nạp thẻ thành công'
-        });
-      } else {
-        resolve({
-          success: false,
-          message: 'Thẻ không hợp lệ hoặc đã được sử dụng'
-        });
-      }
-    }, 1500);
-  });
-}
-
-async function saveDepositHistory(userId, cardType, cardSerial, amount, transactionId) {
-  if (!firebase.firestore) {
-    console.log("Firestore chưa được khởi tạo");
-    return;
-  }
-  
-  try {
-    await firebase.firestore().collection('deposits').add({
-      userId: userId,
-      cardType: cardType,
-      cardSerial: cardSerial,
-      amount: Number(amount),
-      transactionId: transactionId,
-      status: 'completed',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  } catch (error) {
-    console.error("Lỗi khi lưu lịch sử nạp thẻ:", error);
-  }
-}
-
-function updateUserBalance(amount) {
-  console.log(`Cần cập nhật số dư tài khoản thêm ${amount}đ`);
-}
-</script>
-
-</body>
-</html>
-</body>
+        
+        <div class="products-grid">
+            <!-- Sản phẩm 1 -->
+            <div class="product-card" data-id="101" data-name="Acc Reg VIP 10" data-price="500000">
+                <div class="product-badge">HOT</div>
+                <div class="product-img">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="product-info">
+                    <h3>Acc Reg VIP 10 Full Skin</h3>
+                    <div class="product-price">500.000đ</div>
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Mua ngay</button>
+                </div>
+            </div>
+            
+            <!-- Thêm các sản phẩm khác tương tự -->
+        </div>
+    </div>
+</section>
 </html>
