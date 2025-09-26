@@ -1,159 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Quản lý tài khoản</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f0f8ff; text-align: center; }
-    .login, .main { margin: 40px auto; padding: 20px; width: 300px; background: white; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-    input, button { margin: 8px 0; padding: 8px; width: 90%; border-radius: 8px; border: 1px solid #ccc; }
-    button { background: #4CAF50; color: white; cursor: pointer; }
-    button:hover { background: #45a049; }
-    .hidden { display: none; }
-    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #e0f7fa; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quản lý tài khoản (Admin / CTV)</title>
+<style>
+  body{font-family:Inter,system-ui,Arial;margin:0;background:#f5f7fb;color:#111}
+  .wrap{max-width:980px;margin:30px auto;padding:18px}
+  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(2,6,23,0.06);margin-bottom:18px}
+  h1{margin:0 0 8px 0}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  input,select{padding:8px;border-radius:8px;border:1px solid #e6e6f0}
+  button{padding:8px 12px;border-radius:8px;border:0;background:#7c3aed;color:#fff;cursor:pointer}
+  button.ghost{background:#eef2ff;color:#111}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:8px;border-bottom:1px solid #f3f3f8;text-align:left;vertical-align:middle}
+  th{background:#f1efff}
+  img.thumb{width:72px;height:72px;object-fit:cover;border-radius:8px}
+  .muted{color:#6b7280;font-size:13px}
+  .right{margin-left:auto}
+</style>
 </head>
 <body>
-  <div class="login" id="loginBox">
-    <h2>Đăng nhập</h2>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Đăng nhập</button>
-    <p id="msg" style="color:red;"></p>
-  </div>
+  <div class="wrap">
 
-  <div class="main hidden" id="mainBox">
-    <h2>Trang quản lý</h2>
-    <p>Xin chào, <span id="roleText"></span>!</p>
-
-    <div id="adminBox" class="hidden">
-      <h3>Admin - Thêm tài khoản</h3>
-      <input id="accUser" placeholder="Tên đăng nhập acc">
-      <input id="accPass" placeholder="Mật khẩu acc">
-      <input id="accSkin" placeholder="Skin acc">
-      <input id="accImg" placeholder="Link ảnh acc">
-      <button onclick="addAcc()">Thêm acc</button>
+    <div class="card" id="loginCard">
+      <h1>🔐 Đăng nhập</h1>
+      <div class="row">
+        <input id="login_username" placeholder="username" />
+        <input id="login_password" placeholder="password" type="password" />
+        <button id="btnLogin">Đăng nhập</button>
+      </div>
+      <p id="loginMsg" class="muted"></p>
+      <p class="muted">Lưu ý: Users được lấy từ file <code>accounts.json</code> trên GitHub raw.</p>
     </div>
 
-    <h3>Danh sách tài khoản</h3>
-    <table id="accTable">
-      <thead>
-        <tr>
-          <th>MS</th>
-          <th>Tài khoản</th>
-          <th>Mật khẩu</th>
-          <th>Skin</th>
-          <th>Ảnh</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="card" id="appCard" style="display:none;">
+      <div style="display:flex;align-items:center;">
+        <h2 style="margin:0">📋 Quản lý tài khoản</h2>
+        <div class="right muted">Role: <b id="roleLabel">-</b></div>
+      </div>
+
+      <div id="adminPanel" style="margin-top:12px;display:none;">
+        <h3>➕ Thêm tài khoản (Admin)</h3>
+        <div class="row">
+          <input id="new_user" placeholder="Tài khoản (username)" />
+          <input id="new_pass" placeholder="Mật khẩu" />
+          <input id="new_skin" placeholder="Skin" />
+          <input id="new_img" placeholder="Link ảnh (https://...)" />
+          <select id="new_status">
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+          </select>
+          <button id="btnAdd">Thêm</button>
+        </div>
+        <p class="muted">Ghi chú: acc thêm sẽ lưu vào <code>localStorage</code> trên trình duyệt của bạn (không ghi lên GitHub).</p>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="row">
+          <input id="filter" placeholder="Tìm MS / username / skin..." style="flex:1" />
+          <button id="btnExport" class="ghost">Xuất CSV</button>
+        </div>
+      </div>
+
+      <table id="accTable">
+        <thead>
+          <tr>
+            <th style="width:80px">MS</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Skin</th>
+            <th style="width:100px">Ảnh</th>
+            <th>Tình Trạng Chủ</th>
+            <th style="width:180px">Hành động</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get, child, set, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { sha256 } from "https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js";
+<script>
+const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBgkwN-ZLZ6Gv46NZmHQqNYiZYKQ6Zj9b4",
-      authDomain: "quanlytaikhoanctvhg.firebaseapp.com",
-      databaseURL: "https://quanlytaikhoanctvhg-default-rtdb.firebaseio.com",
-      projectId: "quanlytaikhoanctvhg",
-      storageBucket: "quanlytaikhoanctvhg.firebasestorage.app",
-      messagingSenderId: "702694949499",
-      appId: "1:702694949499:web:ad5a0ea230c00150cbd8de",
-      measurementId: "G-6W1VK6WFYP"
-    };
+let usersRemote = null;
+let currentUser = null;
+let accountsLSKey = "lq_accounts_v1";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+function el(id){ return document.getElementById(id); }
+function show(msg){ el("loginMsg").innerText = msg || ""; }
 
-    let currentRole = "";
+async function loadRemoteUsers(){
+  try {
+    const res = await fetch(RAW_USERS_URL + "?_=" + Date.now(), {cache: "no-store"});
+    if (!res.ok) throw new Error("Fetch failed: " + res.status);
+    const data = await res.json();
+    usersRemote = data.users || null;
+    return usersRemote;
+  } catch(e) {
+    console.error(e);
+    usersRemote = null;
+    show("Lỗi khi tải users từ GitHub: " + e.message);
+    return null;
+  }
+}
 
-    // Đăng nhập
-    window.login = async function() {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
-      if (!user || !pass) return;
-
-      const snapshot = await get(child(ref(db), "users"));
-      if (!snapshot.exists()) return alert("Chưa có user!");
-
-      const users = snapshot.val();
-      let found = null;
-      for (let key in users) {
-        if (users[key].username === user && users[key].password === sha256(pass)) {
-          found = users[key];
-        }
-      }
-
-      if (found) {
-        document.getElementById("loginBox").classList.add("hidden");
-        document.getElementById("mainBox").classList.remove("hidden");
-        currentRole = found.role;
-        document.getElementById("roleText").innerText = found.role;
-        if (found.role === "admin") {
-          document.getElementById("adminBox").classList.remove("hidden");
-        }
-        loadAcc();
-      } else {
-        document.getElementById("msg").innerText = "Sai tài khoản hoặc mật khẩu!";
-      }
-    };
-
-    // Thêm acc (chỉ admin)
-    window.addAcc = async function() {
-      if (currentRole !== "admin") return;
-
-      const accUser = document.getElementById("accUser").value;
-      const accPass = document.getElementById("accPass").value;
-      const accSkin = document.getElementById("accSkin").value;
-      const accImg = document.getElementById("accImg").value;
-
-      if (!accUser || !accPass) return alert("Điền đủ thông tin!");
-
-      const newRef = push(ref(db, "accounts"));
-      const ms = (newRef.key).slice(-3).toUpperCase();
-
-      await set(newRef, {
-        ms: ms,
-        username: accUser,
-        password: accPass,
-        skin: accSkin,
-        img: accImg
-      });
-
-      loadAcc();
-    };
-
-    // Load acc
-    async function loadAcc() {
-      const snapshot = await get(child(ref(db), "accounts"));
-      const tbody = document.querySelector("#accTable tbody");
-      tbody.innerHTML = "";
-
-      if (!snapshot.exists()) return;
-
-      const data = snapshot.val();
-      let i = 1;
-      for (let key in data) {
-        const row = document.createElement("tr");
-        const acc = data[key];
-        row.innerHTML = `
-          <td>${String(i).padStart(3,"0")}</td>
-          <td>${acc.username || ""}</td>
-          <td>${currentRole === "admin" ? acc.password : "*****"}</td>
-          <td>${acc.skin || ""}</td>
-          <td>${acc.img ? `<img src="${acc.img}" width="60">` : ""}</td>
-        `;
-        tbody.appendChild(row);
-        i++;
-      }
+async function doLogin(){
+  const u = el("login_username").value.trim();
+  const p = el("login_password").value;
+  if(!u || !p){ show("Nhập username + password"); return; }
+  if(!usersRemote){
+    await loadRemoteUsers();
+    if(!usersRemote){ show("Không có users để kiểm tra"); return; }
+  }
+  let found = null;
+  for(const k in usersRemote){
+    const it = usersRemote[k];
+    if(it.username === u && it.password === p){
+      found = { username: it.username, role: it.role };
+      break;
     }
-  </script>
+  }
+  if(!found){ show("Sai username hoặc mật khẩu!"); return; }
+  currentUser = found;
+  el("loginCard").style.display = "none";
+  el("appCard").style.display = "block";
+  el("roleLabel").innerText = currentUser.role.toUpperCase();
+  if(currentUser.role === "admin") el("adminPanel").style.display = "block";
+  else el("adminPanel").style.display = "none";
+  renderAccounts();
+}
+
+function readAccountsFromLS(){
+  try {
+    const raw = localStorage.getItem(accountsLSKey);
+    if(!raw) return [];
+    return JSON.parse(raw);
+  } catch(e) { return []; }
+}
+function writeAccountsToLS(arr){
+  localStorage.setItem(accountsLSKey, JSON.stringify(arr));
+}
+function nextMS(arr){ return String(arr.length + 1).padStart(3,"0"); }
+
+function addAccountLocal(){
+  if(!currentUser || currentUser.role !== "admin") return alert("Chỉ admin được thêm");
+  const u = el("new_user").value.trim();
+  const p = el("new_pass").value;
+  const skin = el("new_skin").value.trim();
+  const img = el("new_img").value.trim();
+  const status = el("new_status").value;
+  if(!u || !p){ alert("Nhập username + password cho acc"); return; }
+  const arr = readAccountsFromLS();
+  arr.push({ ms: nextMS(arr), username: u, password: p, skin: skin, image: img, status: status });
+  writeAccountsToLS(arr);
+  renderAccounts();
+  el("new_user").value = ""; el("new_pass").value = ""; el("new_skin").value = ""; el("new_img").value = "";
+}
+
+function deleteAccountLocal(idx){
+  if(!currentUser || currentUser.role !== "admin") return;
+  if(!confirm("Xóa acc MS " + String(idx+1).padStart(3,"0") + " ?")) return;
+  const arr = readAccountsFromLS();
+  arr.splice(idx,1);
+  for(let i=0;i<arr.length;i++) arr[i].ms = String(i+1).padStart(3,"0");
+  writeAccountsToLS(arr);
+  renderAccounts();
+}
+
+function editAccountLocal(idx){
+  if(!currentUser || currentUser.role !== "admin") return;
+  const arr = readAccountsFromLS();
+  const acc = arr[idx];
+  const u = prompt("Sửa Username", acc.username);
+  if(u===null) return;
+  const p = prompt("Sửa Password", acc.password);
+  if(p===null) return;
+  const s = prompt("Sửa Skin", acc.skin);
+  if(s===null) return;
+  const i = prompt("Sửa Link Ảnh", acc.image);
+  if(i===null) return;
+  const st = prompt("Sửa Tình Trạng (ON/OFF)", acc.status);
+  if(st===null) return;
+  acc.username = u; acc.password = p; acc.skin = s; acc.image = i; acc.status = st;
+  writeAccountsToLS(arr);
+  renderAccounts();
+}
+
+function renderAccounts(){
+  const tbody = document.querySelector("#accTable tbody");
+  const thead = document.querySelector("#accTable thead tr");
+  tbody.innerHTML = "";
+
+  const arr = readAccountsFromLS();
+  const filter = (el("filter").value || "").toLowerCase();
+
+  // Vẽ lại header theo role
+  if(currentUser && currentUser.role === "admin"){
+    thead.innerHTML = `
+      <th style="width:80px">MS</th>
+      <th>Username</th>
+      <th>Password</th>
+      <th>Skin</th>
+      <th style="width:100px">Ảnh</th>
+      <th>Tình Trạng Chủ</th>
+      <th style="width:180px">Hành động</th>
+    `;
+  } else {
+    thead.innerHTML = `
+      <th style="width:80px">MS</th>
+      <th>Skin</th>
+      <th style="width:100px">Ảnh</th>
+      <th>Tình Trạng Chủ</th>
+    `;
+  }
+
+  arr.forEach((a, idx)=>{
+    const rowText = (a.ms + " " + (a.username||"") + " " + (a.skin||"")).toLowerCase();
+    if(filter && !rowText.includes(filter)) return;
+
+    const tr = document.createElement("tr");
+
+    if(currentUser && currentUser.role === "admin"){
+      tr.innerHTML = `
+        <td>${a.ms}</td>
+        <td>${a.username || ""}</td>
+        <td>${a.password || ""}</td>
+        <td>${a.skin || ""}</td>
+        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
+        <td>${a.status || "OFF"}</td>
+        <td>
+          <button onclick="editAccountLocal(${idx})">Sửa</button>
+          <button onclick="deleteAccountLocal(${idx})">Xóa</button>
+        </td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td>${a.ms}</td>
+        <td>${a.skin || ""}</td>
+        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
+        <td>${a.status || "OFF"}</td>
+      `;
+    }
+
+    tbody.appendChild(tr);
+  });
+}
+
+function exportCSV(){
+  const arr = readAccountsFromLS();
+  const header = ['MS','Username','Password','Skin','Image','Status'];
+  const rows = [header].concat(arr.map(a => [a.ms,a.username, (currentUser && currentUser.role==='admin')?a.password:'', a.skin||'', a.image||'', a.status||'OFF']));
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'accounts.csv'; a.click(); URL.revokeObjectURL(url);
+}
+
+el("btnLogin").addEventListener("click", doLogin);
+el("btnAdd").addEventListener("click", addAccountLocal);
+el("btnExport").addEventListener("click", exportCSV);
+el("filter").addEventListener("input", renderAccounts);
+
+loadRemoteUsers();
+</script>
 </body>
 </html>
