@@ -5,31 +5,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Quản lý tài khoản</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
-  .logo {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 50%;
-  vertical-align: middle;
-  margin-right: 8px;
-  border: 2px solid #99ddff;
-}
-
+/* ===== Body ===== */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Baloo 2', cursive;
   margin: 0;
   background: linear-gradient(135deg, #e6f7ff, #f0faff);
   min-height: 100vh;
   color: #333;
+  overflow-x: hidden;
 }
 
+/* ===== Wrap ===== */
 .wrap {
   max-width: 980px;
   margin: 30px auto;
   padding: 18px;
+  position: relative;
+  z-index: 10;
 }
 
+/* ===== Card ===== */
 .card {
   background: #fff;
   border-radius: 16px;
@@ -49,6 +46,7 @@ h1,h2,h3 {
   color: #007acc;
 }
 
+/* ===== Row / Input / Button ===== */
 .row {
   display: flex;
   gap: 10px;
@@ -90,6 +88,7 @@ button.ghost {
   color: #007acc;
 }
 
+/* ===== Table ===== */
 table {
   width: 100%;
   border-collapse: separate;
@@ -110,12 +109,24 @@ th {
   font-size: 14px;
 }
 
+#accTable tbody tr:hover { background: #f0faff; cursor: pointer; }
+
 img.thumb {
   width: 72px;
   height: 72px;
   object-fit: cover;
   border-radius: 10px;
   border: 2px solid #cceeff;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 8px;
+  border: 2px solid #99ddff;
 }
 
 .muted {
@@ -127,104 +138,172 @@ img.thumb {
   margin-left: auto;
 }
 
-/* Overlay loading */
+/* ===== Overlay Loading ===== */
 #loadingOverlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: linear-gradient(135deg, #e6f7ff, #f0faff);
-  display: none;
+  background: linear-gradient(135deg, rgba(200,240,255,0.9), rgba(230,250,255,0.9));
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   z-index: 9999;
+  text-align: center;
+  overflow: hidden;
 }
 
-#loadingOverlay h1 {
-  font-family: 'Baloo 2', cursive;
+#clouds {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%; left: -50%;
+  background: url('https://i.ibb.co/Z6LzXrD/clouds.png') repeat-x;
+  background-size: contain;
+  animation: moveClouds 120s linear infinite;
+  z-index: 0;
+}
+
+@keyframes moveClouds {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ===== Welcome Typewriter ===== */
+#welcomeText {
+  font-family: 'Pacifico', cursive;
   font-size: 48px;
   color: #007acc;
-  animation: popText 1s ease infinite alternate;
-  margin: 0 0 20px 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#loadingOverlay p {
-  font-family: 'Baloo 2', cursive;
-  font-size: 22px;
-  color: #3399ff;
-  animation: fadeBlink 1.2s ease infinite;
-  margin: 0;
+#welcomeText span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: typeIn 0.5s forwards;
 }
 
-@keyframes popText {
-  from { transform: scale(1); }
-  to { transform: scale(1.15); }
+@keyframes typeIn {
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeBlink {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+/* ===== Progress Bar ===== */
+#progressWrapper {
+  width: 80%;
+  height: 24px;
+  background: #e0f4ff;
+  border-radius: 12px;
+  margin-top: 20px;
+  overflow: hidden;
+  z-index:1;
 }
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg,#66c2ff,#99ddff);
+  border-radius: 12px;
+  transition: width 0.2s;
+}
+
+/* ===== Admin selection ===== */
+#adminSelect {
+  margin-top: 20px;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  z-index:1;
+}
+
+.adminBtn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(45deg,#99ddff,#66c2ff);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.adminBtn:hover { transform: scale(1.1); }
+
+/* Fade out overlay */
+.fade-out { opacity: 0 !important; pointer-events: none; transition: 1s; }
 </style>
 </head>
 <body>
-  <div class="wrap">
 
-    <div class="card" id="loginCard">
-      <h1>
-  <img src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/download%20(3).jpeg" class="logo">
-  Đăng nhập
-</h1>
+<div class="wrap">
+
+  <div class="card" id="loginCard">
+    <h1>
+      <img src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/download%20(3).jpeg" class="logo">
+      Cộng Tác Viên Hờ Gờ
+    </h1>
+    <h2>Đăng nhập</h2>
+    <div class="row">
+      <input id="login_username" placeholder="username" />
+      <input id="login_password" placeholder="password" type="password" />
+      <button id="btnLogin">Đăng nhập</button>
+    </div>
+    <p id="loginMsg" class="muted"></p>
+  </div>
+
+  <div class="card" id="appCard" style="display:none;">
+    <div style="display:flex;align-items:center;">
+      <h2 style="margin:0">📋 Quản lý tài khoản</h2>
+      <div class="right muted">Role: <b id="roleLabel">-</b></div>
+    </div>
+
+    <div id="adminPanel" style="margin-top:12px;display:none;">
+      <h3>➕ Thêm tài khoản (Admin)</h3>
       <div class="row">
-        <input id="login_username" placeholder="username" />
-        <input id="login_password" placeholder="password" type="password" />
-        <button id="btnLogin">Đăng nhập</button>
+        <input id="new_user" placeholder="Tài khoản (username)" />
+        <input id="new_pass" placeholder="Mật khẩu" />
+        <input id="new_skin" placeholder="Skin" />
+        <input id="new_img" placeholder="Link ảnh (https://...)" />
+        <select id="new_status">
+          <option value="ON">ON</option>
+          <option value="OFF">OFF</option>
+        </select>
+        <button id="btnAdd">Thêm</button>
       </div>
-      <p id="loginMsg" class="muted"></p>
     </div>
 
-    <div class="card" id="appCard" style="display:none;">
-      <div style="display:flex;align-items:center;">
-        <h2 style="margin:0">📋 Quản lý tài khoản</h2>
-        <div class="right muted">Role: <b id="roleLabel">-</b></div>
+    <div style="margin-top:12px;">
+      <div class="row">
+        <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1" />
+        <button id="btnExport" class="ghost">📂 Xuất CSV</button>
       </div>
-
-      <div id="adminPanel" style="margin-top:12px;display:none;">
-        <h3>➕ Thêm tài khoản (Admin)</h3>
-        <div class="row">
-          <input id="new_user" placeholder="Tài khoản (username)" />
-          <input id="new_pass" placeholder="Mật khẩu" />
-          <input id="new_skin" placeholder="Skin" />
-          <input id="new_img" placeholder="Link ảnh (https://...)" />
-          <select id="new_status">
-            <option value="ON">ON</option>
-            <option value="OFF">OFF</option>
-          </select>
-          <button id="btnAdd">Thêm</button>
-        </div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="row">
-          <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1" />
-          <button id="btnExport" class="ghost">📂 Xuất CSV</button>
-        </div>
-      </div>
-
-      <table id="accTable">
-        <thead>
-          <tr></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
     </div>
 
+    <table id="accTable">
+      <thead><tr></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <div id="loadingOverlay">
-    <h1>Welcomeeee... 💙</h1>
-    <p>Waiting to loading Web...</p>
+</div>
+
+<div id="loadingOverlay">
+  <div id="clouds"></div>
+  <div id="welcomeText"></div>
+  <div id="progressWrapper" style="display:none;">
+    <div id="progressBar"></div>
   </div>
+  <div id="adminSelect" style="display:none;">
+    <button class="adminBtn" id="admin1">🌸 Giao Béo ✨</button>
+    <button class="adminBtn" id="admin2">💙 Quỳnh Cute ✨</button>
+  </div>
+</div>
 
 <script>
 const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
@@ -236,6 +315,7 @@ let accountsLSKey = "lq_accounts_v1";
 function el(id){ return document.getElementById(id); }
 function show(msg){ el("loginMsg").innerText = msg || ""; }
 
+/* ===== Load remote users ===== */
 async function loadRemoteUsers(){
   try {
     const res = await fetch(RAW_USERS_URL + "?_=" + Date.now(), {cache: "no-store"});
@@ -251,6 +331,7 @@ async function loadRemoteUsers(){
   }
 }
 
+/* ===== Login ===== */
 async function doLogin(){
   const u = el("login_username").value.trim();
   const p = el("login_password").value;
@@ -271,140 +352,144 @@ async function doLogin(){
   currentUser = found;
 
   el("loginCard").style.display = "none";
+  startOverlay();
+}
+
+/* ===== Overlay animation ===== */
+function startOverlay(){
+  const welcomeText = el("welcomeText");
+  const loadingBar = el("progressWrapper");
+  const adminSelect = el("adminSelect");
+  welcomeText.innerHTML = "";
+  const text = "🌸 Welcomeeee 💙 ✨";
+  text.split("").forEach((ch,i)=>{
+    const span = document.createElement("span");
+    span.innerText = ch;
+    span.style.animationDelay = (i*0.1) + "s";
+    welcomeText.appendChild(span);
+  });
+
+  if(currentUser.role==="admin"){
+    setTimeout(()=>{
+      welcomeText.style.display = "none";
+      adminSelect.style.display = "flex";
+      el("admin1").onclick = el("admin2").onclick = ()=>fadeOutOverlay(startApp);
+    }, 2000);
+  } else {
+    loadingBar.style.display = "block";
+    let progress = 0;
+    const interval = setInterval(()=>{
+      progress += Math.floor(Math.random()*10)+5;
+      if(progress>=100) progress=100;
+      el("progressBar").style.width = progress+"%";
+      if(progress>=100){
+        clearInterval(interval);
+        setTimeout(()=>fadeOutOverlay(startApp),500);
+      }
+    },100);
+  }
+}
+
+function fadeOutOverlay(callback){
   const overlay = el("loadingOverlay");
-  overlay.style.display = "flex";
+  overlay.classList.add("fade-out");
   setTimeout(()=>{
     overlay.style.display = "none";
-    el("appCard").style.display = "block";
-    el("roleLabel").innerText = currentUser.role.toUpperCase();
-    if(currentUser.role === "admin") el("adminPanel").style.display = "block";
-    else el("adminPanel").style.display = "none";
-    renderAccounts();
-  }, 2500);
+    overlay.classList.remove("fade-out");
+    callback();
+  }, 1000);
 }
 
-function readAccountsFromLS(){
-  try {
-    const raw = localStorage.getItem(accountsLSKey);
-    if(!raw) return [];
-    return JSON.parse(raw);
-  } catch(e) { return []; }
+/* ===== Start App ===== */
+function startApp(){
+  el("appCard").style.display = "block";
+  el("roleLabel").innerText = currentUser.role.toUpperCase();
+  if(currentUser.role === "admin") el("adminPanel").style.display = "block";
+  else el("adminPanel").style.display = "none";
+  renderAccounts();
 }
-function writeAccountsToLS(arr){
-  localStorage.setItem(accountsLSKey, JSON.stringify(arr));
-}
-function nextMS(arr){ return String(arr.length + 1).padStart(3,"0"); }
 
+/* ===== LocalStorage management ===== */
+function readAccountsFromLS(){ try { return JSON.parse(localStorage.getItem(accountsLSKey)||'[]'); } catch(e){ return []; } }
+function writeAccountsToLS(arr){ localStorage.setItem(accountsLSKey,JSON.stringify(arr)); }
+function nextMS(arr){ return String(arr.length+1).padStart(3,"0"); }
+
+/* ===== Add / Delete / Edit ===== */
 function addAccountLocal(){
-  if(!currentUser || currentUser.role !== "admin") return alert("Chỉ admin được thêm");
+  if(!currentUser || currentUser.role!=="admin") return alert("Chỉ admin được thêm");
   const u = el("new_user").value.trim();
   const p = el("new_pass").value;
   const skin = el("new_skin").value.trim();
   const img = el("new_img").value.trim();
   const status = el("new_status").value;
-  if(!u || !p){ alert("Nhập username + password cho acc"); return; }
+  if(!u||!p){ alert("Nhập username + password"); return; }
   const arr = readAccountsFromLS();
-  arr.push({ ms: nextMS(arr), username: u, password: p, skin: skin, image: img, status: status });
+  if(arr.some(acc=>acc.username===u)){ alert("Username đã tồn tại!"); return; }
+  arr.push({ms:nextMS(arr),username:u,password:p,skin:skin,image:img,status:status});
   writeAccountsToLS(arr);
   renderAccounts();
-  el("new_user").value = ""; el("new_pass").value = ""; el("new_skin").value = ""; el("new_img").value = "";
+  el("new_user").value=""; el("new_pass").value=""; el("new_skin").value=""; el("new_img").value="";
 }
 
 function deleteAccountLocal(idx){
-  if(!currentUser || currentUser.role !== "admin") return;
-  if(!confirm("Xóa acc MS " + String(idx+1).padStart(3,"0") + " ?")) return;
+  if(!currentUser || currentUser.role!=="admin") return;
+  if(!confirm("Xóa acc MS "+String(idx+1).padStart(3,"0")+" ?")) return;
   const arr = readAccountsFromLS();
   arr.splice(idx,1);
-  for(let i=0;i<arr.length;i++) arr[i].ms = String(i+1).padStart(3,"0");
+  for(let i=0;i<arr.length;i++) arr[i].ms=String(i+1).padStart(3,"0");
   writeAccountsToLS(arr);
   renderAccounts();
 }
 
 function editAccountLocal(idx){
-  if(!currentUser || currentUser.role !== "admin") return;
+  if(!currentUser || currentUser.role!=="admin") return;
   const arr = readAccountsFromLS();
   const acc = arr[idx];
-  const u = prompt("Sửa Username", acc.username);
-  if(u===null) return;
-  const p = prompt("Sửa Password", acc.password);
-  if(p===null) return;
-  const s = prompt("Sửa Skin", acc.skin);
-  if(s===null) return;
-  const i = prompt("Sửa Link Ảnh", acc.image);
-  if(i===null) return;
-  const st = prompt("Sửa Tình Trạng (ON/OFF)", acc.status);
-  if(st===null) return;
-  acc.username = u; acc.password = p; acc.skin = s; acc.image = i; acc.status = st;
+  const u = prompt("Sửa Username", acc.username); if(u===null) return;
+  const p = prompt("Sửa Password", acc.password); if(p===null) return;
+  const s = prompt("Sửa Skin", acc.skin); if(s===null) return;
+  const i = prompt("Sửa Link Ảnh", acc.image); if(i===null) return;
+  const st = prompt("Sửa Tình Trạng (ON/OFF)", acc.status); if(st===null) return;
+  acc.username=u; acc.password=p; acc.skin=s; acc.image=i; acc.status=st;
   writeAccountsToLS(arr);
   renderAccounts();
 }
 
+/* ===== Render Table ===== */
 function renderAccounts(){
   const tbody = document.querySelector("#accTable tbody");
   const thead = document.querySelector("#accTable thead tr");
-  tbody.innerHTML = "";
-
+  tbody.innerHTML="";
   const arr = readAccountsFromLS();
-  const filter = (el("filter").value || "").toLowerCase();
+  const filter = (el("filter").value||"").toLowerCase();
 
-  if(currentUser && currentUser.role === "admin"){
-    thead.innerHTML = `
-      <th style="width:80px">MS</th>
-      <th>Username</th>
-      <th>Password</th>
-      <th>Skin</th>
-      <th style="width:100px">Ảnh</th>
-      <th>Tình Trạng Chủ</th>
-      <th style="width:180px">Hành động</th>
-    `;
+  if(currentUser.role==="admin"){
+    thead.innerHTML = `<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th><th style="width:180px">Hành động</th>`;
   } else {
-    thead.innerHTML = `
-      <th style="width:80px">MS</th>
-      <th>Skin</th>
-      <th style="width:100px">Ảnh</th>
-      <th>Tình Trạng Chủ</th>
-    `;
+    thead.innerHTML = `<th style="width:80px">MS</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th>`;
   }
 
-  arr.forEach((a, idx)=>{
-    const rowText = (a.ms + " " + (a.username||"") + " " + (a.skin||"")).toLowerCase();
+  arr.forEach((a,idx)=>{
+    const rowText=(a.ms+" "+(a.username||"")+" "+(a.skin||"")).toLowerCase();
     if(filter && !rowText.includes(filter)) return;
-
-    const tr = document.createElement("tr");
-
-    if(currentUser && currentUser.role === "admin"){
-      tr.innerHTML = `
-        <td>${a.ms}</td>
-        <td>${a.username || ""}</td>
-        <td>${a.password || ""}</td>
-        <td>${a.skin || ""}</td>
-        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
-        <td>${a.status || "OFF"}</td>
-        <td>
-          <button onclick="editAccountLocal(${idx})">✏️ Sửa</button>
-          <button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button>
-        </td>
-      `;
+    const tr=document.createElement("tr");
+    if(currentUser.role==="admin"){
+      tr.innerHTML=`<td>${a.ms}</td><td>${a.username||""}</td><td>${a.password||""}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td><td><button onclick="editAccountLocal(${idx})">✏️ Sửa</button><button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button></td>`;
     } else {
-      tr.innerHTML = `
-        <td>${a.ms}</td>
-        <td>${a.skin || ""}</td>
-        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
-        <td>${a.status || "OFF"}</td>
-      `;
+      tr.innerHTML=`<td>${a.ms}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td>`;
     }
-
     tbody.appendChild(tr);
   });
 }
 
+/* ===== Export CSV ===== */
 function exportCSV(){
   const arr = readAccountsFromLS();
-  const header = ['MS','Username','Password','Skin','Image','Status'];
-  const rows = [header].concat(arr.map(a => [a.ms,a.username, (currentUser && currentUser.role==='admin')?a.password:'', a.skin||'', a.image||'', a.status||'OFF']));
-  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'accounts.csv'; a.click(); URL.revokeObjectURL(url);
+  const header=['MS','Username','Password','Skin','Image','Status'];
+  const rows=[header].concat(arr.map(a=>[a.ms,a.username,(currentUser.role==='admin')?a.password:'',a.skin||'',a.image||'',a.status||'OFF']));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='accounts.csv'; a.click(); URL.revokeObjectURL(url);
 }
 
 el("btnLogin").addEventListener("click", doLogin);
