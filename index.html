@@ -1,34 +1,13 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quản lý tài khoản</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
 body{margin:0;font-family:'Baloo 2',cursive;background:linear-gradient(135deg,#e6f7ff,#f0faff);min-height:100vh;color:#333;}
-/* Overlay */
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#e6f7ff,#f0faff);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;transition:opacity 0.5s;}
-#overlay.hide{opacity:0;pointer-events:none;}
-#welcomeText{font-family:'Pacifico',cursive;font-size:48px;color:#007acc;display:flex;justify-content:center;flex-wrap:wrap;position:relative;}
-#welcomeText span{opacity:0;transform:translateY(-10px);animation:typeIn 0.5s forwards;}
-@keyframes typeIn{to{opacity:1;transform:translateY(0);}}
-.sparkle{position:absolute;font-size:24px;animation:floatUp 3s linear infinite;}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(-200px) rotate(360deg);}}
-#btnContinue{margin-top:40px;padding:12px 28px;font-size:20px;border:none;border-radius:24px;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;cursor:pointer;transition:0.3s;}
-#btnContinue:hover{transform:scale(1.1);}
-
-/* Bạn là ai / CTV animation */
-#roleSelect, #waitingBox{display:none;flex-direction:column;align-items:center;}
-.roleBtn{margin:8px;padding:16px 28px;border-radius:50%;border:none;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;font-size:20px;cursor:pointer;transition:0.3s;}
-.roleBtn:hover{transform:scale(1.2);}
-
-/* Progress bar */
-#progressBarContainer{display:none;width:80%;height:24px;background:#cceeff;border-radius:12px;margin-top:20px;overflow:hidden;}
-#progressBar{width:0%;height:100%;background:#66c2ff;border-radius:12px;transition:width 0.1s linear;}
-
-/* Main App */
 .wrap{max-width:980px;margin:30px auto;padding:18px;display:none;}
 .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,0.05);margin-bottom:18px;}
 h1,h2,h3{margin:0 0 12px 0;color:#007acc;}
@@ -45,6 +24,21 @@ img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px 
 .logo{width:48px;height:48px;vertical-align:middle;margin-right:8px;}
 .muted{color:#666;font-size:13px;}
 .right{margin-left:auto;}
+/* Overlay */
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#e6f7ff,#f0faff);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;transition:opacity 0.5s;}
+#overlay.hide{opacity:0;pointer-events:none;}
+#welcomeText{font-family:'Pacifico',cursive;font-size:48px;color:#007acc;display:flex;justify-content:center;flex-wrap:wrap;position:relative;}
+#welcomeText span{opacity:0;transform:translateY(-10px);animation:typeIn 0.5s forwards;}
+@keyframes typeIn{to{opacity:1;transform:translateY(0);}}
+.sparkle{position:absolute;font-size:24px;animation:floatUp 3s linear infinite;}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(-200px) rotate(360deg);}}
+#btnContinue{margin-top:40px;padding:12px 28px;font-size:20px;border:none;border-radius:24px;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;cursor:pointer;transition:0.3s;}
+#btnContinue:hover{transform:scale(1.1);}
+#roleSelect,#waitingBox{display:none;flex-direction:column;align-items:center;}
+.roleBtn{margin:8px;padding:16px 28px;border-radius:50%;border:none;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;font-size:20px;cursor:pointer;transition:0.3s;}
+.roleBtn:hover{transform:scale(1.2);}
+#progressBarContainer{display:none;width:80%;height:24px;background:#cceeff;border-radius:12px;margin-top:20px;overflow:hidden;}
+#progressBar{width:0%;height:100%;background:#66c2ff;border-radius:12px;transition:width 0.1s linear;}
 </style>
 </head>
 <body>
@@ -133,132 +127,12 @@ welcomeText.split('').forEach((ch,i)=>{
     welcomeContainer.appendChild(sparkle);
   }
 });
-/* === Continue button === */
+
 const btnContinue=document.getElementById('btnContinue');
 btnContinue.addEventListener('click',()=>{
-  if(currentUser && currentUser.role==='admin'){
-    document.getElementById('welcomeText').style.display='none';
-    btnContinue.style.display='none';
-    document.getElementById('roleSelect').style.display='flex';
-  }else{
-    showWaitingAnimation('Bạn là cộng tác viên', startApp);
-  }
+  document.getElementById('overlay').classList.add('hide');
+  document.getElementById('mainApp').style.display='block';
 });
-/* Role select buttons */
-const roleBtns=document.querySelectorAll('.roleBtn');
-roleBtns.forEach(b=>{
-  b.addEventListener('click',()=>{
-    const name=b.dataset.name;
-    showWaitingAnimation('Bạn là '+name, startApp);
-  });
-});
-function showWaitingAnimation(msg,callback){
-  document.getElementById('welcomeText').style.display='none';
-  btnContinue.style.display='none';
-  document.getElementById('roleSelect').style.display='none';
-  const waitingBox=document.getElementById('waitingBox');
-  const progress=document.getElementById('progressBar');
-  waitingBox.style.display='flex';
-  document.getElementById('waitingMsg').innerText=msg+'...\nWaiting to load Web';
-  let val=0;
-  const interval=setInterval(()=>{
-    val+=Math.random()*5;
-    if(val>=100){val=100;clearInterval(interval);setTimeout(callback,500);}
-    progress.style.width=val+'%';
-  },50);
-}
-
-/* === Login & Account logic === */
-const RAW_USERS_URL="https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
-let usersRemote=null,currentUser=null;
-const accountsLSKey="lq_accounts_v1";
-function el(id){return document.getElementById(id);}
-function show(msg){el("loginMsg").innerText=msg||"";}
-async function loadRemoteUsers(){
-  try{
-    const res=await fetch(RAW_USERS_URL+"?_="+Date.now(),{cache:"no-store"});
-    if(!res.ok) throw new Error("Fetch failed:"+res.status);
-    const data=await res.json();
-    usersRemote=data.users||null;
-    return usersRemote;
-  }catch(e){console.error(e); usersRemote=null; show("Lỗi tải users: "+e.message); return null;}
-}
-async function doLogin(){
-  const u=el("login_username").value.trim();
-  const p=el("login_password").value;
-  if(!u||!p){ show("Nhập username + password"); return; }
-  if(!usersRemote){ await loadRemoteUsers(); if(!usersRemote){ show("Không có users để kiểm tra"); return; } }
-  let found=null;
-  for(const k in usersRemote){ const it=usersRemote[k]; if(it.username===u && it.password===p){ found={username:it.username,role:it.role}; break; } }
-  if(!found){ show("Sai username hoặc mật khẩu!"); return; }
-  currentUser=found;
-  fadeOutOverlay(startApp);
-}
-function fadeOutOverlay(callback){
-  const overlay=document.getElementById('overlay');
-  overlay.classList.add('hide');
-  setTimeout(callback,600);
-}
-function startApp(){
-  el("mainApp").style.display="block";
-  el("loginCard").style.display="block";
-  el("roleLabel").innerText=currentUser.role.toUpperCase();
-  if(currentUser.role==="admin") el("adminPanel").style.display="block"; else el("adminPanel").style.display="none";
-  renderAccounts();
-}
-
-/* LocalStorage accounts */
-function readAccountsFromLS(){ try{ const raw=localStorage.getItem(accountsLSKey); if(!raw) return[]; return JSON.parse(raw);}catch(e){return[];} }
-function writeAccountsToLS(arr){ localStorage.setItem(accountsLSKey,JSON.stringify(arr)); }
-function nextMS(arr){ return String(arr.length+1).padStart(3,"0"); }
-
-/* Add/Delete/Edit */
-function addAccountLocal(){
-  if(!currentUser||currentUser.role!=="admin") return alert("Chỉ admin được thêm");
-  const u=el("new_user").value.trim();
-  const p=el("new_pass").value;
-  const skin=el("new_skin").value.trim();
-  const img=el("new_img").value.trim();
-  const status=el("new_status").value;
-  if(!u||!p){ alert("Nhập username + password cho acc"); return; }
-  const arr=readAccountsFromLS();
-  arr.push({ms:nextMS(arr),username:u,password:p,skin:skin,image:img,status:status});
-  writeAccountsToLS(arr); renderAccounts();
-  el("new_user").value=""; el("new_pass").value=""; el("new_skin").value=""; el("new_img").value="";
-}
-function deleteAccountLocal(idx){ if(!currentUser||currentUser.role!=="admin") return; if(!confirm("Xóa acc MS "+String(idx+1).padStart(3,"0")+" ?")) return; const arr=readAccountsFromLS(); arr.splice(idx,1); for(let i=0;i<arr.length;i++) arr[i].ms=String(i+1).padStart(3,"0"); writeAccountsToLS(arr); renderAccounts();}
-function editAccountLocal(idx){ if(!currentUser||currentUser.role!=="admin") return; const arr=readAccountsFromLS(); const acc=arr[idx]; const u=prompt("Sửa Username",acc.username); if(u===null)return; const p=prompt("Sửa Password",acc.password); if(p===null)return; const s=prompt("Sửa Skin",acc.skin); if(s===null)return; const i=prompt("Sửa Link Ảnh",acc.image); if(i===null)return; const st=prompt("Sửa Tình Trạng (ON/OFF)",acc.status); if(st===null)return; acc.username=u; acc.password=p; acc.skin=s; acc.image=i; acc.status=st; writeAccountsToLS(arr); renderAccounts();}
-function renderAccounts(){
-  const tbody=document.querySelector("#accTable tbody");
-  const thead=document.querySelector("#accTable thead tr");
-  tbody.innerHTML="";
-  const arr=readAccountsFromLS();
-  const filter=(el("filter").value||"").toLowerCase();
-  if(currentUser && currentUser.role==="admin"){
-    thead.innerHTML=`<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th><th style="width:180px">Hành động</th>`;
-  }else{thead.innerHTML=`<th style="width:80px">MS</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th>`;}
-  arr.forEach((a,idx)=>{
-    const rowText=(a.ms+" "+(a.username||"")+" "+(a.skin||"")).toLowerCase();
-    if(filter && !rowText.includes(filter)) return;
-    const tr=document.createElement("tr");
-    if(currentUser && currentUser.role==="admin"){
-      tr.innerHTML=`<td>${a.ms}</td><td>${a.username||""}</td><td>${a.password||""}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td><td><button onclick="editAccountLocal(${idx})">✏️ Sửa</button> <button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button></td>`;
-    }else{
-      tr.innerHTML=`<td>${a.ms}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td>`;
-    }
-    tbody.appendChild(tr);
-  });
-}
-
-/* Export CSV */
-function exportCSV(){ const arr=readAccountsFromLS(); const header=['MS','Username','Password','Skin','Image','Status']; const rows=[header].concat(arr.map(a=>[a.ms,a.username,(currentUser&&currentUser.role==='admin')?a.password:'',a.skin||'',a.image||'',a.status||'OFF'])); const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='accounts.csv'; a.click(); URL.revokeObjectURL(url); }
-
-/* Event listeners */
-el("btnLogin").addEventListener("click",doLogin);
-el("btnAdd").addEventListener("click",addAccountLocal);
-el("btnExport").addEventListener("click",exportCSV);
-el("filter").addEventListener("input",renderAccounts);
-loadRemoteUsers();
 </script>
 </body>
 </html>
