@@ -21,53 +21,28 @@ table{width:100%;border-collapse:separate;border-spacing:0 10px;margin-top:12px;
 th,td{padding:12px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 th{background:#e6f7ff;color:#007acc;font-size:14px;}
 img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px solid #cceeff;}
-.logo{width:48px;height:48px;vertical-align:middle;margin-right:8px;}
+.logo{font-size:48px;margin-right:8px;}
 .muted{color:#666;font-size:13px;}
 .right{margin-left:auto;}
-/* Overlay */
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#e6f7ff,#f0faff);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;transition:opacity 0.5s;}
-#overlay.hide{opacity:0;pointer-events:none;}
-#welcomeText{font-family:'Pacifico',cursive;font-size:48px;color:#007acc;display:flex;justify-content:center;flex-wrap:wrap;position:relative;text-align:center;}
-#welcomeText span{opacity:0;transform:translateY(-10px);animation:typeIn 0.5s forwards;}
+/* Welcome typewriter */
+#welcomeText{font-family:'Pacifico',cursive;font-size:48px;color:#007acc;text-align:center;margin-bottom:30px;}
+#welcomeText span{opacity:0;transform:translateY(-10px);display:inline-block;animation:typeIn 0.5s forwards;}
 @keyframes typeIn{to{opacity:1;transform:translateY(0);}}
 .sparkle{position:absolute;font-size:24px;animation:floatUp 3s linear infinite;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(-200px) rotate(360deg);}}
-#btnContinue{margin-top:40px;padding:12px 28px;font-size:20px;border:none;border-radius:24px;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;cursor:pointer;transition:0.3s;}
-#btnContinue:hover{transform:scale(1.1);}
-#roleSelect,#waitingBox{display:none;flex-direction:column;align-items:center;}
-.roleBtn{margin:8px;padding:16px 28px;border-radius:50%;border:none;background:linear-gradient(45deg,#66c2ff,#99ddff);color:white;font-size:20px;cursor:pointer;transition:0.3s;}
-.roleBtn:hover{transform:scale(1.2);}
-#progressBarContainer{display:none;width:80%;height:24px;background:#cceeff;border-radius:12px;margin-top:20px;overflow:hidden;}
-#progressBar{width:0%;height:100%;background:#66c2ff;border-radius:12px;transition:width 0.1s linear;}
 </style>
 </head>
 <body>
 
-<div id="overlay">
-  <div id="welcomeText"></div>
-  <button id="btnContinue">Tiếp tục</button>
-  <div id="roleSelect">
-    <p>Bạn là ai ?</p>
-    <div style="display:flex;">
-      <button class="roleBtn" data-name="Giao Béo">Giao Béo</button>
-      <button class="roleBtn" data-name="Quỳnh Cute">Quỳnh Cute</button>
-    </div>
-  </div>
-  <div id="waitingBox">
-    <p id="waitingMsg"></p>
-    <div id="progressBarContainer"><div id="progressBar"></div></div>
-  </div>
-</div>
+<div id="welcomeText"></div>
 
 <div class="wrap" id="mainApp">
   <div class="card" id="loginCard">
-    <h1>
-      <span class="logo">🌟</span> Cộng Tác Viên Hờ Gờ
-    </h1>
+    <h1><span class="logo">🌟</span> Cộng Tác Viên Hờ Gờ</h1>
     <h2>Đăng nhập</h2>
     <div class="row">
-      <input id="login_username" placeholder="username" />
-      <input id="login_password" placeholder="password" type="password" />
+      <input id="login_username" placeholder="username">
+      <input id="login_password" placeholder="password" type="password">
       <button id="btnLogin">Đăng nhập</button>
     </div>
     <p id="loginMsg" class="muted"></p>
@@ -82,10 +57,10 @@ img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px 
     <div id="adminPanel" style="margin-top:12px;display:none;">
       <h3>➕ Thêm tài khoản (Admin)</h3>
       <div class="row">
-        <input id="new_user" placeholder="Tài khoản (username)" />
-        <input id="new_pass" placeholder="Mật khẩu" />
-        <input id="new_skin" placeholder="Skin" />
-        <input id="new_img" placeholder="Link ảnh (https://...)" />
+        <input id="new_user" placeholder="Tài khoản (username)">
+        <input id="new_pass" placeholder="Mật khẩu">
+        <input id="new_skin" placeholder="Skin">
+        <input id="new_img" placeholder="Link ảnh (https://...)">
         <select id="new_status">
           <option value="ON">ON</option>
           <option value="OFF">OFF</option>
@@ -96,7 +71,7 @@ img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px 
 
     <div style="margin-top:12px;">
       <div class="row">
-        <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1" />
+        <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1">
         <button id="btnExport" class="ghost">📂 Xuất CSV</button>
       </div>
     </div>
@@ -113,33 +88,48 @@ const RAW_USERS_URL="https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/
 let usersRemote=null,currentUser=null,accountsLSKey="lq_accounts_v1";
 function el(id){return document.getElementById(id);}
 function show(msg){el("loginMsg").innerText=msg||"";}
-async function loadRemoteUsers(){try{const res=await fetch(RAW_USERS_URL+"?_="+Date.now(),{cache:"no-store"});if(!res.ok)throw new Error(res.status);const data=await res.json();usersRemote=data.users||null;return usersRemote;}catch(e){console.error(e);usersRemote=null;show("Lỗi khi tải users: "+e.message);return null;}}
+async function loadRemoteUsers(){
+  try{
+    const res=await fetch(RAW_USERS_URL+"?_="+Date.now(),{cache:"no-store"});
+    if(!res.ok)throw new Error(res.status);
+    const data=await res.json();
+    usersRemote=data.users||null;
+    return usersRemote;
+  }catch(e){console.error(e);usersRemote=null;show("Lỗi khi tải users: "+e.message);return null;}
+}
 
-function typewriter(text,container){container.innerHTML="";text.split("").forEach((ch,i)=>{const span=document.createElement("span");span.innerText=ch;span.style.animationDelay=(i*0.1)+"s";container.appendChild(span);});}
+function typewriter(text,container){
+  container.innerHTML="";
+  text.split("").forEach((ch,i)=>{
+    const span=document.createElement("span");
+    span.innerText=ch;
+    span.style.animationDelay=(i*0.08)+"s";
+    container.appendChild(span);
+  });
+}
 typewriter("🌸 Welcomeeee 💙 ✨",el("welcomeText"));
 
-el("btnContinue").addEventListener("click",()=>{el("overlay").classList.add("hide");el("mainApp").style.display="block";});
+el("mainApp").style.display="block";
 
 async function doLogin(){
   const u=el("login_username").value.trim(),p=el("login_password").value;
   if(!u||!p){show("Nhập username + password");return;}
   if(!usersRemote){await loadRemoteUsers();if(!usersRemote){show("Không có users để kiểm tra");return;}}
-  let found=null;for(const k in usersRemote){const it=usersRemote[k];if(it.username===u&&it.password===p){found={username:it.username,role:it.role};break;}}
+  let found=null;
+  for(const k in usersRemote){const it=usersRemote[k];if(it.username===u&&it.password===p){found={username:it.username,role:it.role};break;}}
   if(!found){show("Sai username hoặc mật khẩu!");return;}
   currentUser=found;
   el("loginCard").style.display="none";
-  const waiting=el("waitingBox");waiting.style.display="flex";el("progressBarContainer").style.display="block";
-  if(currentUser.role==="admin"){
-    el("roleSelect").style.display="flex";
-    document.querySelectorAll(".roleBtn").forEach(b=>{b.onclick=()=>{el("roleSelect").style.display="none";el("waitingMsg").innerText="Bạn là admin: "+b.dataset.name;startProgress();};});
-  } else {
-    el("waitingMsg").innerText="Bạn là cộng tác viên";
-    startProgress();
-  }
+  startApp();
 }
 
-function startProgress(){const bar=el("progressBar");bar.style.width="0%";let p=0;const interval=setInterval(()=>{p+=2;if(p>=100){clearInterval(interval);startApp();}bar.style.width=p+"%";},30);}
-function startApp(){el("appCard").style.display="block";el("roleLabel").innerText=currentUser.role.toUpperCase();if(currentUser.role==="admin")el("adminPanel").style.display="block";else el("adminPanel").style.display="none";renderAccounts();}
+function startApp(){
+  el("appCard").style.display="block";
+  el("roleLabel").innerText=currentUser.role.toUpperCase();
+  if(currentUser.role==="admin")el("adminPanel").style.display="block";
+  else el("adminPanel").style.display="none";
+  renderAccounts();
+}
 
 function readAccountsFromLS(){try{return JSON.parse(localStorage.getItem(accountsLSKey)||"[]");}catch(e){return[];}}
 function writeAccountsToLS(arr){localStorage.setItem(accountsLSKey,JSON.stringify(arr));}
@@ -147,10 +137,26 @@ function nextMS(arr){return String(arr.length+1).padStart(3,"0");}
 function addAccountLocal(){if(!currentUser||currentUser.role!=="admin")return alert("Chỉ admin được thêm");const u=el("new_user").value.trim();const p=el("new_pass").value;const skin=el("new_skin").value.trim();const img=el("new_img").value.trim();const status=el("new_status").value;if(!u||!p){alert("Nhập username + password cho acc");return;}const arr=readAccountsFromLS();arr.push({ms:nextMS(arr),username:u,password:p,skin:skin,image:img,status:status});writeAccountsToLS(arr);renderAccounts();el("new_user").value="";el("new_pass").value="";el("new_skin").value="";el("new_img").value="";}
 function deleteAccountLocal(idx){if(!currentUser||currentUser.role!=="admin")return;if(!confirm("Xóa acc MS "+String(idx+1).padStart(3,"0")+" ?"))return;const arr=readAccountsFromLS();arr.splice(idx,1);for(let i=0;i<arr.length;i++)arr[i].ms=String(i+1).padStart(3,"0");writeAccountsToLS(arr);renderAccounts();}
 function editAccountLocal(idx){if(!currentUser||currentUser.role!=="admin")return;const arr=readAccountsFromLS();const acc=arr[idx];const u=prompt("Sửa Username",acc.username);if(u===null)return;const p=prompt("Sửa Password",acc.password);if(p===null)return;const s=prompt("Sửa Skin",acc.skin);if(s===null)return;const i=prompt("Sửa Link Ảnh",acc.image);if(i===null)return;const st=prompt("Sửa Tình Trạng (ON/OFF)",acc.status);if(st===null)return;acc.username=u;acc.password=p;acc.skin=s;acc.image=i;acc.status=st;writeAccountsToLS(arr);renderAccounts();}
-function renderAccounts(){const tbody=document.querySelector("#accTable tbody");const thead=document.querySelector("#accTable thead tr");tbody.innerHTML="";const arr=readAccountsFromLS();const filter=(el("filter").value||"").toLowerCase();if(currentUser&&currentUser.role==="admin"){thead.innerHTML=`<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th><th style="width:180px">Hành động</th>`;}else{thead.innerHTML=`<th style="width:80px">MS</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th>`;}
-arr.forEach((a,idx)=>{const rowText=(a.ms+" "+(a.username||"")+" "+(a.skin||"")).toLowerCase();if(filter&&!rowText.includes(filter))return;const tr=document.createElement("tr");if(currentUser&&currentUser.role==="admin"){tr.innerHTML=`<td>${a.ms}</td><td>${a.username||""}</td><td>${a.password||""}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td><td><button onclick="editAccountLocal(${idx})">✏️ Sửa</button><button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button></td>`;}else{tr.innerHTML=`<td>${a.ms}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td>`;}tbody.appendChild(tr);});
+function renderAccounts(){
+  const tbody=document.querySelector("#accTable tbody");
+  const thead=document.querySelector("#accTable thead tr");
+  tbody.innerHTML="";
+  const arr=readAccountsFromLS();
+  const filter=(el("filter").value||"").toLowerCase();
+  if(currentUser&&currentUser.role==="admin"){thead.innerHTML=`<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th><th style="width:180px">Hành động</th>`;}
+  else{thead.innerHTML=`<th style="width:80px">MS</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th>`;}
+  arr.forEach((a,idx)=>{
+    const rowText=(a.ms+" "+(a.username||"")+" "+(a.skin||"")).toLowerCase();
+    if(filter&&!rowText.includes(filter))return;
+    const tr=document.createElement("tr");
+    if(currentUser&&currentUser.role==="admin"){tr.innerHTML=`<td>${a.ms}</td><td>${a.username||""}</td><td>${a.password||""}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td><td><button onclick="editAccountLocal(${idx})">✏️ Sửa</button><button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button></td>`;}
+    else{tr.innerHTML=`<td>${a.ms}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td>`;}
+    tbody.appendChild(tr);
+  });
 }
+
 function exportCSV(){const arr=readAccountsFromLS();const header=['MS','Username','Password','Skin','Image','Status'];const rows=[header].concat(arr.map(a=>[a.ms,a.username,(currentUser&&currentUser.role==='admin')?a.password:'',a.skin||'',a.image||'',a.status||'OFF']));const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='accounts.csv';a.click();URL.revokeObjectURL(url);}
+
 el("btnLogin").addEventListener("click",doLogin);
 el("btnAdd").addEventListener("click",addAccountLocal);
 el("btnExport").addEventListener("click",exportCSV);
