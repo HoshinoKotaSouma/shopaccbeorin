@@ -3,36 +3,132 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Quản lý tài khoản (Admin / CTV)</title>
+<title>Quản lý tài khoản siêu cute 🎀</title>
 <style>
-  body{font-family:Inter,system-ui,Arial;margin:0;background:#f5f7fb;color:#111}
-  .wrap{max-width:980px;margin:30px auto;padding:18px}
-  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(2,6,23,0.06);margin-bottom:18px}
-  h1{margin:0 0 8px 0}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  input,select{padding:8px;border-radius:8px;border:1px solid #e6e6f0}
-  button{padding:8px 12px;border-radius:8px;border:0;background:#7c3aed;color:#fff;cursor:pointer}
-  button.ghost{background:#eef2ff;color:#111}
-  table{width:100%;border-collapse:collapse;margin-top:12px}
-  th,td{padding:8px;border-bottom:1px solid #f3f3f8;text-align:left;vertical-align:middle}
-  th{background:#f1efff}
-  img.thumb{width:72px;height:72px;object-fit:cover;border-radius:8px}
-  .muted{color:#6b7280;font-size:13px}
-  .right{margin-left:auto}
+body {
+  font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #ffe6f2, #e6f7ff, #f3e6ff);
+  min-height: 100vh;
+  color: #333;
+}
+
+.wrap {
+  max-width: 980px;
+  margin: 30px auto;
+  padding: 18px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  margin-bottom: 18px;
+  animation: pop 0.6s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+h1,h2,h3 {
+  margin: 0 0 12px 0;
+  color: #ff66a3;
+  text-shadow: 1px 1px #fff0f5;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+input, select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid #ffd6eb;
+  outline: none;
+  transition: 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #ff99cc;
+  box-shadow: 0 0 8px #ffcce0;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 0;
+  background: linear-gradient(45deg, #ff99cc, #ffccff);
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #ff66b2, #ffb3e6);
+}
+
+button.ghost {
+  background: linear-gradient(45deg, #a3d8f4, #d6eaff);
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-top: 12px;
+}
+
+th, td {
+  padding: 12px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+th {
+  background: #ffe6f2;
+  color: #ff3399;
+  font-size: 14px;
+}
+
+img.thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #ffcce0;
+}
+
+.muted {
+  color: #888;
+  font-size: 13px;
+}
+
+.right {
+  margin-left: auto;
+}
 </style>
 </head>
 <body>
   <div class="wrap">
 
     <div class="card" id="loginCard">
-      <h1>🔐 Đăng nhập</h1>
+      <h1>🔐 Đăng nhập cute</h1>
       <div class="row">
         <input id="login_username" placeholder="username" />
         <input id="login_password" placeholder="password" type="password" />
-        <button id="btnLogin">Đăng nhập</button>
+        <button id="btnLogin">Đăng nhập 🎀</button>
       </div>
       <p id="loginMsg" class="muted"></p>
-      <p class="muted">Lưu ý: Users được lấy từ file <code>accounts.json</code> trên GitHub raw.</p>
+      <p class="muted">Tài khoản kiểm tra từ file <code>accounts.json</code> trên GitHub raw.</p>
     </div>
 
     <div class="card" id="appCard" style="display:none;">
@@ -52,29 +148,20 @@
             <option value="ON">ON</option>
             <option value="OFF">OFF</option>
           </select>
-          <button id="btnAdd">Thêm</button>
+          <button id="btnAdd">Thêm 🌸</button>
         </div>
-        <p class="muted">Ghi chú: acc thêm sẽ lưu vào <code>localStorage</code> trên trình duyệt của bạn (không ghi lên GitHub).</p>
       </div>
 
       <div style="margin-top:12px;">
         <div class="row">
-          <input id="filter" placeholder="Tìm MS / username / skin..." style="flex:1" />
-          <button id="btnExport" class="ghost">Xuất CSV</button>
+          <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1" />
+          <button id="btnExport" class="ghost">📂 Xuất CSV</button>
         </div>
       </div>
 
       <table id="accTable">
         <thead>
-          <tr>
-            <th style="width:80px">MS</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Skin</th>
-            <th style="width:100px">Ảnh</th>
-            <th>Tình Trạng Chủ</th>
-            <th style="width:180px">Hành động</th>
-          </tr>
+          <tr></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -197,7 +284,6 @@ function renderAccounts(){
   const arr = readAccountsFromLS();
   const filter = (el("filter").value || "").toLowerCase();
 
-  // Vẽ lại header theo role
   if(currentUser && currentUser.role === "admin"){
     thead.innerHTML = `
       <th style="width:80px">MS</th>
@@ -232,8 +318,8 @@ function renderAccounts(){
         <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
         <td>${a.status || "OFF"}</td>
         <td>
-          <button onclick="editAccountLocal(${idx})">Sửa</button>
-          <button onclick="deleteAccountLocal(${idx})">Xóa</button>
+          <button onclick="editAccountLocal(${idx})">✏️ Sửa</button>
+          <button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button>
         </td>
       `;
     } else {
@@ -253,7 +339,7 @@ function exportCSV(){
   const arr = readAccountsFromLS();
   const header = ['MS','Username','Password','Skin','Image','Status'];
   const rows = [header].concat(arr.map(a => [a.ms,a.username, (currentUser && currentUser.role==='admin')?a.password:'', a.skin||'', a.image||'', a.status||'OFF']));
-  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'accounts.csv'; a.click(); URL.revokeObjectURL(url);
 }
