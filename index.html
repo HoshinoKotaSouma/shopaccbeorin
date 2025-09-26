@@ -109,30 +109,46 @@ img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px 
 </div>
 
 <script>
-/* === Welcome typewriter + sparkles === */
-const welcomeText="🌸 Welcomeeee 💙 ✨";
-const welcomeContainer=document.getElementById('welcomeText');
-welcomeText.split('').forEach((ch,i)=>{
-  const span=document.createElement('span');
-  span.innerText=ch;
-  span.style.animationDelay=(i*0.1)+'s';
-  welcomeContainer.appendChild(span);
-  if(Math.random()<0.4){
-    const sparkle=document.createElement('div');
-    sparkle.className='sparkle';
-    sparkle.innerText=['🌸','✨','💙'][Math.floor(Math.random()*3)];
-    sparkle.style.left=(Math.random()*100)+'%';
-    sparkle.style.top=(Math.random()*100)+'%';
-    sparkle.style.animationDuration=(2+Math.random()*2)+'s';
-    welcomeContainer.appendChild(sparkle);
-  }
-});
+const RAW_USERS_URL="https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
+let usersRemote=null,currentUser=null,accountsLSKey="lq_accounts_v1";
+function el(id){return document.getElementById(id);}
+function show(msg){el("loginMsg").innerText=msg||"";}
+async function loadRemoteUsers(){try{const res=await fetch(RAW_USERS_URL+"?_="+Date.now(),{cache:"no-store"});if(!res.ok)throw new Error(res.status);const data=await res.json();usersRemote=data.users||null;return usersRemote;}catch(e){console.error(e);usersRemote=null;show("Lỗi khi tải users: "+e.message);return null;}}
 
-const btnContinue=document.getElementById('btnContinue');
-btnContinue.addEventListener('click',()=>{
-  document.getElementById('overlay').classList.add('hide');
-  document.getElementById('mainApp').style.display='block';
-});
+function typewriter(text,container){container.innerHTML="";text.split("").forEach((ch,i)=>{const span=document.createElement("span");span.innerText=ch;span.style.animationDelay=(i*0.1)+"s";container.appendChild(span);});}
+typewriter("🌸 Welcomeeee 💙 ✨",el("welcomeText"));
+
+el("btnContinue").addEventListener("click",()=>{el("overlay").classList.add("hide");el("mainApp").style.display="block";});
+
+async function doLogin(){
+  const u=el("login_username").value.trim(),p=el("login_password").value;
+  if(!u||!p){show("Nhập username + password");return;}
+  if(!usersRemote){await loadRemoteUsers();if(!usersRemote){show("Không có users để kiểm tra");return;}}
+  let found=null;for(const k in usersRemote){const it=usersRemote[k];if(it.username===u&&it.password===p){found={username:it.username,role:it.role};break;}}
+  if(!found){show("Sai username hoặc mật khẩu!");return;}
+  currentUser=found;
+  el("loginCard").style.display="none";
+  const waiting=el("waitingBox");waiting.style.display="flex";el("progressBarContainer").style.display="block";
+  if(currentUser.role==="admin"){el("roleSelect").style.display="flex";document.querySelectorAll(".roleBtn").forEach(b=>{b.onclick=()=>{el("roleSelect").style.display="none";startProgress();};});}else{el("waitingMsg").innerText="Bạn là cộng tác viên";startProgress();}
+}
+function startProgress(){const bar=el("progressBar");bar.style.width="0%";let p=0;const interval=setInterval(()=>{p+=2;if(p>=100){clearInterval(interval);startApp();}bar.style.width=p+"%";},30);}
+function startApp(){el("appCard").style.display="block";el("roleLabel").innerText=currentUser.role.toUpperCase();if(currentUser.role==="admin")el("adminPanel").style.display="block";else el("adminPanel").style.display="none";renderAccounts();}
+
+function readAccountsFromLS(){try{return JSON.parse(localStorage.getItem(accountsLSKey)||"[]");}catch(e){return[];}}
+function writeAccountsToLS(arr){localStorage.setItem(accountsLSKey,JSON.stringify(arr));}
+function nextMS(arr){return String(arr.length+1).padStart(3,"0");}
+function addAccountLocal(){if(!currentUser||currentUser.role!=="admin")return alert("Chỉ admin được thêm");const u=el("new_user").value.trim();const p=el("new_pass").value;const skin=el("new_skin").value.trim();const img=el("new_img").value.trim();const status=el("new_status").value;if(!u||!p){alert("Nhập username + password cho acc");return;}const arr=readAccountsFromLS();arr.push({ms:nextMS(arr),username:u,password:p,skin:skin,image:img,status:status});writeAccountsToLS(arr);renderAccounts();el("new_user").value="";el("new_pass").value="";el("new_skin").value="";el("new_img").value="";}
+function deleteAccountLocal(idx){if(!currentUser||currentUser.role!=="admin")return;if(!confirm("Xóa acc MS "+String(idx+1).padStart(3,"0")+" ?"))return;const arr=readAccountsFromLS();arr.splice(idx,1);for(let i=0;i<arr.length;i++)arr[i].ms=String(i+1).padStart(3,"0");writeAccountsToLS(arr);renderAccounts();}
+function editAccountLocal(idx){if(!currentUser||currentUser.role!=="admin")return;const arr=readAccountsFromLS();const acc=arr[idx];const u=prompt("Sửa Username",acc.username);if(u===null)return;const p=prompt("Sửa Password",acc.password);if(p===null)return;const s=prompt("Sửa Skin",acc.skin);if(s===null)return;const i=prompt("Sửa Link Ảnh",acc.image);if(i===null)return;const st=prompt("Sửa Tình Trạng (ON/OFF)",acc.status);if(st===null)return;acc.username=u;acc.password=p;acc.skin=s;acc.image=i;acc.status=st;writeAccountsToLS(arr);renderAccounts();}
+function renderAccounts(){const tbody=document.querySelector("#accTable tbody");const thead=document.querySelector("#accTable thead tr");tbody.innerHTML="";const arr=readAccountsFromLS();const filter=(el("filter").value||"").toLowerCase();if(currentUser&&currentUser.role==="admin"){thead.innerHTML=`<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th><th style="width:180px">Hành động</th>`;}else{thead.innerHTML=`<th style="width:80px">MS</th><th>Skin</th><th style="width:100px">Ảnh</th><th>Tình Trạng Chủ</th>`;}
+arr.forEach((a,idx)=>{const rowText=(a.ms+" "+(a.username||"")+" "+(a.skin||"")).toLowerCase();if(filter&&!rowText.includes(filter))return;const tr=document.createElement("tr");if(currentUser&&currentUser.role==="admin"){tr.innerHTML=`<td>${a.ms}</td><td>${a.username||""}</td><td>${a.password||""}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td><td><button onclick="editAccountLocal(${idx})">✏️ Sửa</button><button onclick="deleteAccountLocal(${idx})">🗑️ Xóa</button></td>`;}else{tr.innerHTML=`<td>${a.ms}</td><td>${a.skin||""}</td><td>${a.image?'<img class="thumb" src="'+a.image+'">':''}</td><td>${a.status||"OFF"}</td>`;}tbody.appendChild(tr);});
+}
+function exportCSV(){const arr=readAccountsFromLS();const header=['MS','Username','Password','Skin','Image','Status'];const rows=[header].concat(arr.map(a=>[a.ms,a.username,(currentUser&&currentUser.role==='admin')?a.password:'',a.skin||'',a.image||'',a.status||'OFF']));const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='accounts.csv';a.click();URL.revokeObjectURL(url);}
+el("btnLogin").addEventListener("click",doLogin);
+el("btnAdd").addEventListener("click",addAccountLocal);
+el("btnExport").addEventListener("click",exportCSV);
+el("filter").addEventListener("input",renderAccounts);
+loadRemoteUsers();
 </script>
 </body>
 </html>
