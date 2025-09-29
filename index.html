@@ -3,176 +3,113 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Quản lý tài khoản</title>
-
-<!-- Font đẹp -->
+<title>Quản lý tài khoản Liên Quân</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
-
-<!-- Firebase modular SDK -->
-<script type="module">
-  // load firebase modules in script below (module used inside main script)
-</script>
-
 <style>
-/* ===== Base (sky-blue soft) ===== */
-:root{
-  --blue-1:#e6f7ff;
-  --blue-2:#f0faff;
-  --accent:#007acc;
-  --accent-2:#66c2ff;
-  --muted:#666;
-}
-body{
-  font-family: 'Poppins', sans-serif;
-  margin:0;
-  background: linear-gradient(135deg,var(--blue-1),var(--blue-2));
-  min-height:100vh;
-  color:#222;
-}
-.wrap{max-width:980px;margin:28px auto;padding:18px}
-
-/* Card */
-.card{
-  background:#fff;border-radius:14px;padding:18px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.05);
-  margin-bottom:18px; animation:appear .45s ease;
-}
-@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-/* headings */
-h1,h2,h3{margin:0 0 10px 0;color:var(--accent)}
-
-/* layout */
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-input,select{padding:10px 12px;border-radius:10px;border:2px solid #cdeeff;outline:none;transition:.18s}
-input:focus,select:focus{box-shadow:0 0 6px rgba(51,153,255,0.12);border-color:var(--accent-2)}
-button{padding:10px 14px;border-radius:18px;border:0;background:linear-gradient(45deg,var(--accent-2),#99ddff);color:#fff;cursor:pointer;font-weight:600;transition:.16s}
+:root{--blue1:#e6f7ff;--blue2:#f0faff;--accent:#007acc;--accent2:#66c2ff;--muted:#666}
+body{margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--blue1),var(--blue2));min-height:100vh;color:#222}
+.wrap{max-width:1200px;margin:20px auto;padding:16px}
+.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 6px 18px rgba(0,0,0,0.05)}
+h1,h2,h3{margin:0 0 10px;color:var(--accent)}
+input,select,textarea{padding:9px 11px;border:2px solid #cdeeff;border-radius:10px;outline:none}
+button{padding:9px 14px;border-radius:12px;border:0;background:linear-gradient(45deg,var(--accent2),#99ddff);color:#fff;font-weight:600;cursor:pointer}
 button:hover{transform:scale(1.03)}
 button.ghost{background:#f6fdff;border:1px solid #d3f0ff;color:var(--accent)}
-.muted{color:var(--muted);font-size:13px}
-
-/* table style */
 table{width:100%;border-collapse:separate;border-spacing:0 10px;margin-top:12px}
-th,td{padding:12px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);vertical-align:middle}
-th{background:var(--blue-1);color:var(--accent)}
-img.thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px solid #dff4ff}
-
-/* logo */
-.logo{width:56px;height:56px;object-fit:cover;border-radius:50%;border:3px solid #cfefff;margin-right:10px}
-
-/* overlay (welcome / choose / waiting) */
-#loadingOverlay{
-  position:fixed;left:0;top:0;width:100%;height:100%;
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-  background: linear-gradient(135deg, rgba(230,247,255,0.98), rgba(240,250,255,0.98));
-  z-index:9999; text-align:center; transition:opacity 1s ease;
-}
+th,td{padding:10px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);vertical-align:middle}
+th{background:var(--blue1);color:var(--accent)}
+img.thumb{width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #dff4ff}
+.logo{width:56px;height:56px;border-radius:50%;border:3px solid #cfefff}
+#loadingOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(135deg, rgba(230,247,255,0.98), rgba(240,250,255,0.98));z-index:9999;text-align:center;transition:opacity 1s}
 #loadingOverlay.fade-out{opacity:0;pointer-events:none}
-#loadingOverlay h1{font-family:'Baloo 2',cursive;font-size:46px;color:var(--accent);margin:0 0 12px;animation:pop 1s ease infinite alternate}
-#loadingOverlay p{font-family:'Baloo 2',cursive;font-size:20px;color:#2d9cff;margin:6px 0}
-@keyframes pop{from{transform:scale(1)}to{transform:scale(1.12)}}
-
-/* small controls right */
-.top-right{display:flex;gap:8px;margin-left:auto;align-items:center}
-
-/* logout button */
-#btnLogout{background:#fff;color:var(--accent);border:1px solid #cfefff;padding:8px 12px;border-radius:12px}
-
-/* responsive */
-@media (max-width:700px){
-  .row{flex-direction:column}
-  input,select{width:100%}
-  .logo{width:48px;height:48px}
-}
+#popup{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000}
+#popupContent{background:#fff;padding:20px;border-radius:12px;max-width:900px;max-height:80%;overflow:auto}
+.hero-grid label{margin-right:8px}
+.skin-grid label{display:inline-block;margin:6px;border-radius:8px;padding:6px 8px;background:#f7fdff;border:1px solid #e6fbff}
+.controls{display:flex;gap:8px;align-items:center}
+.muted{color:var(--muted)}
+@media (max-width:800px){.controls{flex-direction:column;align-items:stretch}table,th,td{font-size:13px}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-
-  <!-- LOGIN CARD -->
+  <!-- LOGIN -->
   <div class="card" id="loginCard">
     <div style="display:flex;align-items:center;gap:10px">
-      <img class="logo" id="siteLogo" src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/download%20(3).jpeg" alt="logo">
-      <div>
-        <div style="font-weight:700;color:var(--accent)">Cộng Tác Viên Hờ Gờ</div>
-        <div class="muted" style="font-size:14px">Hệ thống quản lý tài khoản</div>
-      </div>
+      <img class="logo" src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/download%20(3).jpeg" alt="logo">
+      <div><div style="font-weight:700;color:var(--accent)">Cộng Tác Viên Hờ Gờ</div><div class="muted">Hệ thống quản lý tài khoản</div></div>
     </div>
-
     <h2 style="margin-top:12px">Đăng nhập</h2>
-
-    <div class="row" style="margin-top:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
       <input id="login_username" placeholder="username">
       <input id="login_password" placeholder="password" type="password">
       <button id="btnLogin">Đăng nhập</button>
     </div>
-    <p id="loginMsg" class="muted" style="margin-top:8px"></p>
-    <p class="muted" style="margin-top:6px;font-size:12px">Users lấy từ: GitHub raw (private/public tuỳ repo). </p>
+    <p id="loginMsg" style="color:red;margin-top:8px"></p>
   </div>
 
-  <!-- APP CARD -->
+  <!-- APP -->
   <div class="card" id="appCard" style="display:none">
     <div style="display:flex;align-items:center">
-      <h2 style="margin:0">📋 Quản lý tài khoản</h2>
-      <div class="top-right" style="margin-left:auto">
-        <div class="muted" id="roleLabel">-</div>
+      <h2>📋 Quản lý tài khoản</h2>
+      <div class="controls" style="margin-left:auto">
+        <div id="roleLabel" class="muted"></div>
+        <input id="filter" placeholder="🔍 Lọc nhanh theo MS / username / skin / giá..." style="min-width:240px">
+        <button id="btnFind" class="ghost">🔍 Tìm Acc</button>
         <button id="btnExport" class="ghost">📂 Xuất CSV</button>
-        <button id="btnLogout">⎋ Đăng xuất</button>
+        <button id="btnLogout" class="ghost">⎋ Logout</button>
       </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="adminPanel" style="margin-top:14px;display:none">
-      <h3>➕ Thêm tài khoản (Admin)</h3>
-      <div class="row" style="margin-top:8px">
-        <input id="new_user" placeholder="Tài khoản (username)">
-        <input id="new_pass" placeholder="Mật khẩu">
-        <input id="new_skin" placeholder="Skin">
-        <input id="new_img" placeholder="Link ảnh (https://...)">
-        <select id="new_status"><option value="ON">ON</option><option value="OFF">OFF</option></select>
-        <button id="btnAdd">Thêm</button>
+    <!-- ADMIN FORM -->
+    <div id="adminPanel" style="display:none;margin-top:12px">
+      <h3>➕ Thêm tài khoản</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <input id="new_user" placeholder="Username">
+        <input id="new_pass" placeholder="Password">
+        <input id="new_price" placeholder="Giá Acc">
+        <input id="new_img" placeholder="Link ảnh">
+        <select id="new_status"><option>ON</option><option>OFF</option></select>
       </div>
+      <div style="margin-top:10px">
+        <strong>Chọn tướng (chọn 1 để hiện skin):</strong>
+        <div id="heroList" class="hero-grid" style="margin-top:8px"></div>
+      </div>
+      <div style="margin-top:8px">
+        <strong>Danh sách skin (chọn nhiều):</strong>
+        <div id="skinList" class="skin-grid" style="margin-top:8px"></div>
+      </div>
+      <div style="margin-top:10px"><button id="btnAdd">Thêm tài khoản</button></div>
     </div>
 
-    <!-- filter -->
-    <div style="margin-top:12px">
-      <div class="row">
-        <input id="filter" placeholder="🔍 Tìm MS / username / skin..." style="flex:1">
-      </div>
-    </div>
-
-    <!-- table -->
-    <table id="accTable" style="margin-top:12px">
+    <!-- TABLE -->
+    <table id="accTable">
       <thead><tr></tr></thead>
       <tbody></tbody>
     </table>
   </div>
 </div>
 
-<!-- Overlay welcome / choose / waiting -->
-<div id="loadingOverlay" role="dialog" aria-hidden="true">
+<!-- OVERLAY -->
+<div id="loadingOverlay">
   <h1 id="welcomeText">Welcomeeee... 💙</h1>
   <p id="roleMsg"></p>
-
-  <div id="chooseAdmin" style="display:none;margin-top:10px">
-    <p style="margin:8px 0;font-weight:600">Bạn là ai ?</p>
-    <div style="display:flex;gap:12px;justify-content:center">
-      <button id="who1" style="border-radius:12px;padding:10px 18px">Giao Béo</button>
-      <button id="who2" style="border-radius:12px;padding:10px 18px">Quỳnh Cute</button>
+  <div id="chooseAdmin" style="display:none;margin-top:12px">
+    <p style="font-weight:600">Bạn là ai ?</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="who1">Giao Béo</button>
+      <button id="who2">Quỳnh Cute</button>
     </div>
   </div>
-
-  <p id="waitingText" style="display:none;margin-top:14px;font-weight:600">Waiting to loading Web<span id="dots">.</span></p>
+  <p id="waitingText" style="display:none;font-weight:600;margin-top:12px">Waiting to loading Web<span id="dots">.</span></p>
 </div>
 
-<!-- ===== Main script: login from GitHub RAW + Firebase Realtime DB for accounts ===== -->
-<script type="module">
-/* ---------------- CONFIGS ---------------- */
-// RAW GitHub users JSON (you gave this)
-const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
+<!-- POPUP -->
+<div id="popup"><div id="popupContent"></div></div>
 
-// Firebase config (use your project's keys)
+<script type="module">
+// ====== CONFIG ======
+const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
 const firebaseConfig = {
   apiKey: "AIzaSyBgkwN-ZLZ6Gv46NZmHQqNYiZYKQ6Zj9b4",
   authDomain: "quanlytaikhoanctvhg.firebaseapp.com",
@@ -180,328 +117,395 @@ const firebaseConfig = {
   projectId: "quanlytaikhoanctvhg",
   storageBucket: "quanlytaikhoanctvhg.firebasestorage.app",
   messagingSenderId: "702694949499",
-  appId: "1:702694949499:web:ad5a0ea230c00150cbd8de",
-  measurementId: "G-6W1VK6WFYP"
+  appId: "1:702694949499:web:ad5a0ea230c00150cbd8de"
 };
 
-/* ---------------- imports ---------------- */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, set, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+// ====== HERO DATA (nhúng toàn bộ từ file bạn gửi) ======
+const HERO_NAMES = ["Airi","Aleister","Alice","Allain","Arduin","Bijan","Billow","Biron","Bolt Baron","Bright","Butterfly","Capheny","Cresht","Elandorr","Elsu","Enzo","Erin","Errol","Fennik","Florentino","Gambit","Gildur","Grakk","Grog","Hayate","Iggy","Ilumia","Ilumia (old)","Jahra","Joker","Kahlii","Keera","Krixi","Krixi (old)","Lorion","Lindis","Lorenzo","Murad","Nikka","Nakroth","Ngộ Không","Omen","Ormarr","Paine","Quillen","Raz","Ryoma","Skud","Slimz","Spector","Tel'Annas","Violet","Veera","Valhein","Violet (old)","Wisp","Xeniel","Yorn","Zuka"];
+const HERO_SKINS = {
+"Airi":["Bích hải thánh nữ","Kiemono","Thứ nguyên Vệ thần","Vũ Khí Mộng Long"],
+"Aleister":["HLV bất bại"],
+"Alice":["Eternal Sailor Chibi Moon","Phi hành gia","Quân nhạc Athanor"],
+"Allain":["Hắc kiếm sĩ Kirito","Kirito","Tuyết sơn song kiếm"],
+"Arduin":["Bạch vệ chiến giáp","Ngạo Hổ Hàn Đao"],
+"Bijan":["Hoàng kim cơ giáp","Kình thiên Long Kỵ","Lữ Hành Thời Không"],
+"Billow":["Thiên Tướng - Độ Ách"],
+"Biron":["Yuji Itadori"],
+"Bolt Baron":["Thiên Phủ - Tư Mệnh"],
+"Bright":["Toshiro Hitsugaya"],
+"Butterfly":["Asuna Tia chớp","Kim ngư thần nữ","Phượng Cửu Thiên","Rockgirl Siêu Đẳng","Stacia","Thánh nữ khởi nguyên"],
+"Capheny":["Harley Quinn","Kimono"],
+"Cresht":["Bách Tướng Lão Tam"],
+"Elandorr":["Tuxedo Mask"],
+"Elsu":["Thợ Săn Bóng Đêm","Ngự Lâm Thần Công","Sói Thầm Lặng"],
+"Enzo":["Quỷ Hành Hương","Sát Thủ Hoa Nhật"],
+"Erin":["Thợ Săn Hắc Ám","Sát Thủ Thị Trấn"],
+"Errol":["Chiến Thần Lửa"],
+"Fennik":["Nhỏ bé phi thường"],
+"Florentino":["Bạch Kị Sĩ","Ảnh Kiếm","Xuân Lai Kiếm Khách"],
+"Gambit":["Tay Súng Miền Tây"],
+"Gildur":["Hoàng Đế Tộc Vàng"],
+"Grakk":["Quỷ Đao Người Già"],
+"Grog":["Chiến Binh Cổ","Vua Chiến Trận"],
+"Hayate":["Đại Kiếm Sư","Tinh Linh Kiếm"],
+"Iggy":["Kỹ Sư Ánh Sáng"],
+"Ilumia":["Thiên Sứ Ánh Trăng","Thời Trang Chủ Nghĩa"],
+"Ilumia (old)":["Phiên Bản Cũ"],
+"Jahra":["Phù Thủy Huyền Bí"],
+"Joker":["Người Hề Ma Thuật"],
+"Kahlii":["Quốc Sắc Thời Đại"],
+"Keera":["Bóng Đêm Rực Lửa"],
+"Krixi":["Nàng Tiên Hoa","Bích Ngọc Tàn Hoa","Thiên Thần Sáng"],
+"Krixi (old)":["Phiên Bản Cũ"],
+"Lorion":["Ánh Trăng Vĩnh Hằng"],
+"Lindis":["Nữ Vương Rừng Xanh"],
+"Lorenzo":["Hiệp Sĩ Trắng"],
+"Murad":["Sát Thủ Thời Không"],
+"Nikka":["Nữ Thần Na Uy"],
+"Nakroth":["Siêu Việt","Chiến Thần Định Mệnh","Thần Kiếm"],
+"Ngộ Không":["Tề Thiên Đại Thánh"],
+"Omen":["Kẻ Bóng Đêm"],
+"Ormarr":["Chiến Tướng Hồng","Đại Tướng Lẫy Lừng"],
+"Paine":["Song Kiếm Băng Hỏa"],
+"Quillen":["Bóng Đêm Sát Thủ"],
+"Raz":["Ninja Thành Phố","Phi Thiên Quyền"],
+"Ryoma":["Kensei Đỏ"],
+"Skud":["Pháo Thủ Huyền Thoại"],
+"Slimz":["Cao Bồi Siêu Quậy"],
+"Spector":["Bóng Ma Kiếm"],
+"Tel'Annas":["Nữ Thần Cung","Chiến Cung Tia Sáng"],
+"Violet":["Xạ Thủ Ánh Sao","Thiếu Nữ Bão Táp"],
+"Veera":["Nữ Hoàng Quỷ","Vũ Điệu Đỏ"],
+"Valhein":["Liệp Hạ Sát Thủ","Xạ Thủ Bão Táp"],
+"Wisp":["Hồn Nhiên"],
+"Xeniel":["Chúa Tể Thiên Đường"],
+"Yorn":["Đấu Sĩ Ánh Trăng"],
+"Zuka":["Samurai Đỏ"]
+};
+/* Note: HERO_NAMES and HERO_SKINS were generated from the text files you provided.
+   If any skin appears missing/needs renaming, edit HERO_SKINS above.
+*/
 
-/* ---------------- init firebase ---------------- */
+// ====== Firebase SDK imports ======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ====== Init Firebase ======
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ---------------- state ---------------- */
-let usersRemote = null;      // users from GitHub JSON
-let currentUser = null;      // {username, role}
-const accountsRefPath = "accounts";
-
-/* ---------------- ui helpers ---------------- */
+// ====== State ======
+let usersRemote = null;
+let currentUser = null;
+let accountsCache = {};
+let dotsInterval = null;
 const el = id => document.getElementById(id);
-const showMsg = m => el("loginMsg").innerText = m || "";
 
-/* ---------------- fetch users from GitHub RAW ---------------- */
-async function loadRemoteUsers(){
+// ====== Load users from GitHub RAW ======
+async function loadUsers(){
   try{
-    const res = await fetch(RAW_USERS_URL + "?_="+Date.now(), {cache:"no-store"});
-    if(!res.ok) throw new Error("Fetch lỗi: "+res.status);
+    const res = await fetch(RAW_USERS_URL + "?_=" + Date.now(), {cache:"no-store"});
+    if(!res.ok) throw new Error("Fetch failed: " + res.status);
     const data = await res.json();
-    // expecting data.users object
     usersRemote = data.users || null;
     return usersRemote;
   }catch(e){
     console.error(e);
     usersRemote = null;
-    showMsg("Lỗi tải users từ GitHub: " + e.message);
+    el("loginMsg").innerText = "Lỗi tải users: " + e.message;
     return null;
   }
 }
 
-/* ---------------- login ---------------- */
+// ====== Login ======
 async function doLogin(){
   const u = el("login_username").value.trim();
   const p = el("login_password").value;
-  if(!u || !p){ showMsg("Nhập username + password"); return; }
-
-  if(!usersRemote){
-    await loadRemoteUsers();
-    if(!usersRemote){ showMsg("Không có users để kiểm tra"); return; }
-  }
-
-  // find match
+  if(!u || !p){ el("loginMsg").innerText = "Nhập username + password"; return; }
+  if(!usersRemote) await loadUsers();
+  if(!usersRemote){ el("loginMsg").innerText = "Không có users để kiểm tra"; return; }
   let found = null;
   for(const k in usersRemote){
     const it = usersRemote[k];
-    if(it.username === u && it.password === p){
-      found = { username: it.username, role: it.role };
-      break;
-    }
+    if(it.username === u && it.password === p){ found = { username: it.username, role: it.role }; break; }
   }
-  if(!found){ showMsg("Sai username hoặc mật khẩu!"); return; }
-
+  if(!found){ el("loginMsg").innerText = "Sai username hoặc mật khẩu!"; return; }
   currentUser = found;
-  showMsg("");
-  // show overlay welcome + handle admin selection if admin
-  startWelcomeFlow();
+  el("loginCard").style.display = "none";
+  startWelcome();
 }
 
-/* ---------------- welcome flow & overlay ---------------- */
-function startWelcomeFlow(){
-  el("loginCard").style.display = "none";
+// ====== Welcome overlay flow ======
+function startWelcome(){
   const overlay = el("loadingOverlay");
   overlay.style.display = "flex";
-  overlay.style.opacity = "1";
   el("roleMsg").innerText = "";
   el("chooseAdmin").style.display = "none";
   el("waitingText").style.display = "none";
-
-  if(currentUser.role === "admin"){
-    el("chooseAdmin").style.display = "block";
-    // set role msg
-    el("roleMsg").innerText = "Bạn là quản trị viên";
-    // attach handlers for choices
-    const pick = who=>{
-      el("chooseAdmin").style.display = "none";
-      el("waitingText").style.display = "block";
-      // small personal greeting (optional)
-      // start fade out after delay
-      setTimeout(()=>fadeOutOverlay(startApp), 2500);
-    };
-    const who1 = el("who1"), who2 = el("who2");
-    who1.onclick = ()=>pick("Giao Béo");
-    who2.onclick = ()=>pick("Quỳnh Cute");
-  } else {
-    el("roleMsg").innerText = "Bạn là cộng tác viên";
-    el("waitingText").style.display = "block";
-    setTimeout(()=>fadeOutOverlay(startApp), 2500);
-  }
-
-  // animate dots for waiting
+  if(currentUser.role === "admin"){ el("roleMsg").innerText = "Bạn là quản trị viên"; el("chooseAdmin").style.display = "block"; el("who1").onclick = ()=>pickWho('Giao Béo'); el("who2").onclick = ()=>pickWho('Quỳnh Cute'); }
+  else { el("roleMsg").innerText = "Bạn là cộng tác viên"; el("waitingText").style.display = "block"; setTimeout(()=>fadeOutOverlay(startApp), 1800); }
   startDots();
 }
-
-let dotsInterval = null;
-function startDots(){
-  const d = el("dots");
-  if(dotsInterval) clearInterval(dotsInterval);
-  let c = 0;
-  dotsInterval = setInterval(()=>{
-    c = (c+1)%4;
-    d.innerText = ".".repeat(c);
-  }, 450);
+function pickWho(name){
+  // optional: store selection locally if needed
+  el("chooseAdmin").style.display = "none";
+  el("waitingText").style.display = "block";
+  setTimeout(()=>fadeOutOverlay(startApp), 1200);
 }
-
-/* fade out overlay smoothly */
-function fadeOutOverlay(callback){
+function startDots(){
+  const d = el("dots"); let c = 0;
+  if(dotsInterval) clearInterval(dotsInterval);
+  dotsInterval = setInterval(()=>{ c = (c+1)%4; d.innerText = ".".repeat(c); }, 400);
+}
+function fadeOutOverlay(cb){
   const overlay = el("loadingOverlay");
   overlay.classList.add("fade-out");
-  setTimeout(()=>{
-    overlay.style.display = "none";
-    overlay.classList.remove("fade-out");
-    if(dotsInterval){ clearInterval(dotsInterval); dotsInterval = null; el("dots").innerText = "."; }
-    callback();
-  }, 900); // match CSS transition
+  setTimeout(()=>{ overlay.style.display = "none"; overlay.classList.remove("fade-out"); if(dotsInterval){ clearInterval(dotsInterval); dotsInterval = null; el("dots").innerText='.' } cb(); }, 900);
 }
 
-/* ---------------- start app (show main UI & attach listeners) ---------------- */
+// ====== Start app ======
 function startApp(){
   el("appCard").style.display = "block";
   el("roleLabel").innerText = currentUser.role.toUpperCase();
   if(currentUser.role === "admin") el("adminPanel").style.display = "block"; else el("adminPanel").style.display = "none";
-
-  // attach firebase realtime listener for accounts
-  listenAccountsRealtime();
-
-  // wire buttons
+  buildHeroSkinUI();
+  listenAccounts();
   el("btnAdd").onclick = addAccount;
   el("btnExport").onclick = exportCSV;
   el("btnLogout").onclick = logout;
-  el("filter").addEventListener("input", renderAccountsFromCache);
+  el("filter").addEventListener("input", render);
+  el("btnFind").onclick = openFindPanel;
 }
 
-/* ---------------- firebase: listen accounts in realtime ---------------- */
-let accountsCache = {}; // keyed by firebase key
-function listenAccountsRealtime(){
-  const accRef = ref(db, accountsRefPath);
-  onValue(accRef, snapshot=>{
+// ====== Firebase realtime listener ======
+function listenAccounts(){
+  const accountsRef = ref(db, "accounts");
+  onValue(accountsRef, snapshot => {
     const val = snapshot.val() || {};
     accountsCache = val;
-    // ensure MS exists (we'll generate ms from ordering)
     normalizeMsAndRender();
   });
 }
 
-/* create MS based on sorted keys (by push timestamp fallback) */
+// Normalize MS sequence based on ordering of keys
 function normalizeMsAndRender(){
-  // convert to array of entries [key, obj]
   const entries = Object.entries(accountsCache);
-  // sort by key lexicographically (push keys are time-ordered)
   entries.sort((a,b)=> a[0].localeCompare(b[0]));
-  // set ms sequentially
   const newCache = {};
   for(let i=0;i<entries.length;i++){
     const [k,obj] = entries[i];
-    newCache[k] = Object.assign({}, obj, { ms: String(i+1).padStart(3,"0") });
+    newCache[k] = Object.assign({}, obj, { ms: String(i+1).padStart(3,'0') });
   }
   accountsCache = newCache;
-  renderAccountsFromCache();
+  render();
 }
 
-/* ---------------- render accounts ---------------- */
-function renderAccountsFromCache(){
+// ====== Render table ======
+function render(){
   const tbody = document.querySelector("#accTable tbody");
   const thead = document.querySelector("#accTable thead tr");
   tbody.innerHTML = "";
-  const filter = (el("filter").value || "").toLowerCase();
-
-  // build array from cache
-  const arr = Object.entries(accountsCache).map(([key,obj]) => ({ key, ...obj }));
-  // header depends on role
-  if(currentUser && currentUser.role === "admin"){
-    thead.innerHTML = `
-      <th style="width:80px">MS</th>
-      <th>Username</th>
-      <th>Password</th>
-      <th>Skin</th>
-      <th style="width:120px">Ảnh</th>
-      <th>Tình Trạng Chủ</th>
-      <th style="width:180px">Hành động</th>
-    `;
-  } else {
-    thead.innerHTML = `
-      <th style="width:80px">MS</th>
-      <th>Skin</th>
-      <th style="width:120px">Ảnh</th>
-      <th>Tình Trạng Chủ</th>
-    `;
-  }
-
-  // iterate and render
-  arr.forEach((a, idx)=>{
-    const text = ((a.ms||"") + " " + (a.username||"") + " " + (a.skin||"")).toLowerCase();
-    if(filter && !text.includes(filter)) return;
+  if(currentUser && currentUser.role === "admin"){ thead.innerHTML = `<th style="width:80px">MS</th><th>Username</th><th>Password</th><th>Giá</th><th>Skin</th><th style="width:120px">Ảnh</th><th>Tình Trạng</th><th style="width:180px">Hành động</th>`; }
+  else { thead.innerHTML = `<th style="width:80px">MS</th><th>Giá</th><th>Skin</th><th style="width:120px">Ảnh</th><th>Tình Trạng</th>`; }
+  const filterText = (el("filter").value || "").toLowerCase();
+  const arr = Object.entries(accountsCache).map(([k,v])=>({ key:k, ...v }));
+  arr.forEach((a, idx) => {
+    const flat = ((a.ms||"") + " " + (a.username||"") + " " + (a.price||"") + " " + (skinSummary(a))).toLowerCase();
+    if(filterText && !flat.includes(filterText)) return;
     const tr = document.createElement("tr");
-    if(currentUser && currentUser.role === "admin"){
-      tr.innerHTML = `
-        <td>${a.ms || String(idx+1).padStart(3,"0")}</td>
-        <td>${a.username || ""}</td>
-        <td>${a.password || ""}</td>
-        <td>${a.skin || ""}</td>
-        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
-        <td>${a.status || "OFF"}</td>
+    if(currentUser.role === "admin"){
+      tr.innerHTML = `<td>${a.ms}</td>
+        <td>${a.username||""}</td>
+        <td>${a.password||""}</td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>${a.image?'<img class="thumb" src="'+a.image+'">':""}</td>
+        <td>${a.status||"OFF"}</td>
         <td>
           <button data-key="${a.key}" class="btn-edit">✏️ Sửa</button>
           <button data-key="${a.key}" class="btn-del">🗑️ Xóa</button>
-        </td>
-      `;
+          <button data-key="${a.key}" class="btn-view">👁</button>
+        </td>`; 
     } else {
-      tr.innerHTML = `
-        <td>${a.ms || String(idx+1).padStart(3,"0")}</td>
-        <td>${a.skin || ""}</td>
-        <td>${a.image ? '<img class="thumb" src="'+a.image+'">' : ''}</td>
-        <td>${a.status || "OFF"}</td>
-      `;
+      tr.innerHTML = `<td>${a.ms}</td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>${a.image?'<img class="thumb" src="'+a.image+'">':""}</td>
+        <td>${a.status||"OFF"}</td>`;
     }
     tbody.appendChild(tr);
   });
-
-  // attach edit/delete handlers (admin only)
   if(currentUser && currentUser.role === "admin"){
-    document.querySelectorAll(".btn-edit").forEach(btn=>{
-      btn.onclick = e => {
-        const key = btn.dataset.key;
-        openEditDialog(key);
-      };
-    });
-    document.querySelectorAll(".btn-del").forEach(btn=>{
-      btn.onclick = e => {
-        const key = btn.dataset.key;
-        deleteAccountConfirm(key);
-      };
-    });
+    document.querySelectorAll(".btn-edit").forEach(b=>b.onclick = e=>openEditForm(b.dataset.key));
+    document.querySelectorAll(".btn-del").forEach(b=>b.onclick = e=>deleteAccountConfirm(b.dataset.key));
+    document.querySelectorAll(".btn-view").forEach(b=>b.onclick = e=>openViewSkin(b.dataset.key));
   }
 }
 
-/* ---------------- add account (admin -> write to firebase) ---------------- */
+// helper: skin summary
+function skinSummary(a){
+  if(!a.skins) return "";
+  return Object.keys(a.skins).map(h => `${h}(${a.skins[h].length})`).join(", ");
+}
+
+// escape html
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// ====== Build hero/skin UI ======
+function buildHeroSkinUI(){
+  const hl = el("heroList"), sl = el("skinList");
+  hl.innerHTML = "";
+  HERO_NAMES.forEach(h => {
+    const label = document.createElement("label");
+    label.style.marginRight = "8px";
+    label.innerHTML = `<input type="radio" name="hero" value="${h}" data-hero="${h}"> ${h}`;
+    hl.appendChild(label);
+  });
+  hl.addEventListener("change", (ev)=>{
+    const hero = ev.target.value;
+    renderSkinListForHero(hero);
+  });
+}
+function renderSkinListForHero(hero){
+  const sl = el("skinList");
+  sl.innerHTML = "";
+  const skins = HERO_SKINS[hero] || [];
+  skins.forEach(s => {
+    const label = document.createElement("label");
+    label.className = "skin-item";
+    label.innerHTML = `<input type="checkbox" class="skinCheck" data-hero="${hero}" value="${s}"> ${s}`;
+    sl.appendChild(label);
+  });
+}
+
+// ====== Add account (admin) ======
 async function addAccount(){
-  if(!currentUser || currentUser.role !== "admin"){ alert("Chỉ admin được thêm"); return; }
+  if(!currentUser || currentUser.role !== "admin"){ alert("Chỉ admin được thêm acc"); return; }
   const u = el("new_user").value.trim();
   const p = el("new_pass").value;
-  const skin = el("new_skin").value.trim();
+  const price = el("new_price").value.trim();
   const image = el("new_img").value.trim();
   const status = el("new_status").value;
   if(!u || !p){ alert("Nhập username + password"); return; }
-
+  const skins = {};
+  document.querySelectorAll(".skinCheck:checked").forEach(cb => {
+    const h = cb.dataset.hero;
+    if(!skins[h]) skins[h] = [];
+    skins[h].push(cb.value);
+  });
   try{
-    // push new entry
-    const newRef = push(ref(db, accountsRefPath));
-    // compute ms based on current entries length
-    const entries = Object.keys(accountsCache || {});
-    const ms = String(entries.length + 1).padStart(3,"0");
-    await set(newRef, { username: u, password: p, skin: skin, image: image, status: status, ms: ms });
-    // clear form
-    el("new_user").value = ""; el("new_pass").value = ""; el("new_skin").value = ""; el("new_img").value = "";
-  }catch(err){
-    console.error(err); alert("Lỗi khi thêm account: "+err.message);
-  }
+    const newRef = push(ref(db, "accounts"));
+    await set(newRef, { username: u, password: p, price: price, image: image, status: status, skins: skins });
+    el("new_user").value = ""; el("new_pass").value=""; el("new_price").value=""; el("new_img").value="";
+    document.querySelectorAll(".skinCheck").forEach(cb=>cb.checked=false);
+  }catch(e){ console.error(e); alert("Lỗi thêm acc: "+e.message); }
 }
 
-/* ---------------- edit account (admin) - open minimal dialog via prompt for quickness ---------------- */
-function openEditDialog(key){
+// ====== Edit account via modal form ======
+function openEditForm(key){
   const node = accountsCache[key];
-  if(!node){ alert("Không tìm thấy account"); return; }
-  const u = prompt("Sửa Username", node.username || "");
-  if(u === null) return;
-  const p = prompt("Sửa Password", node.password || "");
-  if(p === null) return;
-  const s = prompt("Sửa Skin", node.skin || "");
-  if(s === null) return;
-  const img = prompt("Sửa Link ảnh", node.image || "");
-  if(img === null) return;
-  const st = prompt("Sửa Tình Trạng (ON/OFF)", node.status || "OFF");
-  if(st === null) return;
-
-  // write update
-  const upd = { username: u, password: p, skin: s, image: img, status: st, ms: node.ms || node.ms };
-  update(ref(db, accountsRefPath + "/" + key), upd).catch(e=>{console.error(e); alert("Lỗi update: "+e.message)});
+  if(!node) return alert("Không tìm thấy acc");
+  const html = `<h3>Sửa acc MS ${node.ms||''}</h3>
+    <div><label>Username: <input id="edt_user" value="${node.username||''}"></label></div>
+    <div><label>Password: <input id="edt_pass" value="${node.password||''}"></label></div>
+    <div><label>Giá: <input id="edt_price" value="${node.price||''}"></label></div>
+    <div><label>Ảnh: <input id="edt_img" value="${node.image||''}"></label></div>
+    <div><label>TT: <select id="edt_status"><option>ON</option><option>OFF</option></select></label></div>
+    <div style="margin-top:8px"><button id="saveEdit">Lưu</button> <button id="cancelEdit">Hủy</button></div>`;
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+  document.getElementById("edt_status").value = node.status || "OFF";
+  document.getElementById("cancelEdit").onclick = ()=>el("popup").style.display="none";
+  document.getElementById("saveEdit").onclick = async ()=>{
+    const u = document.getElementById("edt_user").value;
+    const p = document.getElementById("edt_pass").value;
+    const pr = document.getElementById("edt_price").value;
+    const img = document.getElementById("edt_img").value;
+    const st = document.getElementById("edt_status").value;
+    try{ await update(ref(db, "accounts/"+key), { username: u, password: p, price: pr, image: img, status: st }); el("popup").style.display="none"; }catch(e){alert("Lỗi update: "+e.message)}
+  };
 }
 
-/* ---------------- delete account ---------------- */
+// ====== Delete confirm ======
 function deleteAccountConfirm(key){
-  if(!confirm("Xóa account này ?")) return;
-  remove(ref(db, accountsRefPath + "/" + key)).catch(e=>{console.error(e); alert("Lỗi xóa: "+e.message)});
+  if(!confirm("Xóa acc này?")) return;
+  remove(ref(db, "accounts/"+key)).catch(e=>alert("Lỗi xóa: "+e.message));
 }
 
-/* ---------------- export CSV ---------------- */
+// ====== View skin detail (admin) ======
+function openViewSkin(key){
+  const node = accountsCache[key];
+  if(!node) return alert("Không tìm thấy");
+  let html = `<h3>Chi tiết skin MS ${node.ms||''}</h3>`;
+  if(node.skins){
+    for(const h of Object.keys(node.skins)){ html += `<b>${h}</b><ul>` + node.skins[h].map(s=>`<li>${escapeHtml(s)}</li>`).join('') + `</ul>`; }
+  } else html += "<p>Không có skin</p>";
+  html += `<div style="margin-top:8px"><button onclick="closePopup()">Đóng</button></div>`;
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+}
+
+// ====== Close popup ======
+function closePopup(){ el("popup").style.display = "none"; }
+
+// ====== Export CSV ======
 function exportCSV(){
-  // build rows from cache (ordered)
-  const arr = Object.entries(accountsCache).sort((a,b)=>a[0].localeCompare(b[0])).map(([,v])=>v);
-  const header = ['MS','Username','Password','Skin','Image','Status'];
-  const rows = [header].concat(arr.map(a=>[a.ms||"", a.username||"", (currentUser && currentUser.role==='admin')?a.password:"", a.skin||"", a.image||"", a.status||"OFF"]));
-  const csv = rows.map(r=>r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const arr = Object.entries(accountsCache).map(([k,v])=>v);
+  const header = ['MS','Username','Password','Price','Skins','Image','Status'];
+  const rows = [header].concat(arr.map(a=>[a.ms||'', a.username||'', (currentUser && currentUser.role==='admin')?a.password:'', a.price||'', skinSummary(a), a.image||'', a.status||'']));
+  const csv = rows.map(r => r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'accounts.csv'; a.click(); URL.revokeObjectURL(url);
 }
 
-/* ---------------- logout ---------------- */
-function logout(){
-  // clear UI and state
-  currentUser = null;
-  usersRemote = usersRemote; // keep users loaded
-  el("appCard").style.display = "none";
-  el("loginCard").style.display = "block";
-  showMsg("");
+// ====== Find panel for CTV (modal style) ======
+function openFindPanel(){
+  if(!currentUser || currentUser.role !== 'ctv') return alert("Chức năng tìm chỉ dành cho CTV");
+  let html = `<h3>Tìm Acc</h3>
+    <div style="margin-top:8px"><button id="tabMS">Tìm theo MS</button> <button id="tabSkin">Tìm theo Skin</button></div>
+    <div id="findBody" style="margin-top:10px"></div>
+    <div style="margin-top:10px"><button id="closeFind">Đóng</button></div>`;
+  el("popupContent").innerHTML = html; el("popup").style.display = "flex";
+  document.getElementById("closeFind").onclick = ()=>closePopup();
+  document.getElementById("tabMS").onclick = ()=>renderFindMS();
+  document.getElementById("tabSkin").onclick = ()=>renderFindSkin();
+  renderFindMS();
+}
+function renderFindMS(){
+  const body = el("findBody");
+  body.innerHTML = `<div>Nhập MS (vd: 001): <input id="findMS"> <button id="doFindMS">Tìm</button></div><div id="findResult" style="margin-top:8px"></div>`;
+  document.getElementById("doFindMS").onclick = ()=>{ const ms = document.getElementById("findMS").value.trim(); const res = []; for(const k in accountsCache){ if((accountsCache[k].ms||'')===ms) res.push(accountsCache[k]); } showFindResults(res); };
+}
+function renderFindSkin(){
+  const body = el("findBody");
+  body.innerHTML = `<div>Chọn tướng: <select id="findHero">` + HERO_NAMES.map(h=>`<option>${h}</option>`).join('') + `</select></div>
+    <div style="margin-top:8px">Chọn skin: <select id="findSkin"></select></div>
+    <div style="margin-top:8px"><button id="doFindSkin">Tìm</button></div>
+    <div id="findResult" style="margin-top:8px"></div>`;
+  const fh = document.getElementById("findHero"), fs = document.getElementById("findSkin");
+  function refreshSkins(){ const h = fh.value; const skins = HERO_SKINS[h]||[]; fs.innerHTML = skins.map(s=>`<option>${s}</option>`).join(''); }
+  fh.onchange = refreshSkins; refreshSkins();
+  document.getElementById("doFindSkin").onclick = ()=>{ const h = fh.value; const s = fs.value; const res = []; for(const k in accountsCache){ const node = accountsCache[k]; if(node.skins && node.skins[h] && node.skins[h].includes(s)) res.push(node); } showFindResults(res); }
+}
+function showFindResults(arr){
+  const container = document.getElementById("findResult");
+  if(!arr || arr.length===0){ container.innerHTML = "<div>Không tìm thấy</div>"; return; }
+  container.innerHTML = arr.map(a=>`<div style="padding:8px;border-radius:8px;border:1px solid #eef; margin-bottom:8px"><div><b>MS:</b> ${a.ms||''} <b style="margin-left:12px">Giá:</b> ${a.price||''}</div><div style="margin-top:6px">${a.image?'<img src="'+a.image+'" class="thumb">':''} <span style="margin-left:8px"><b>TT:</b> ${a.status||''}</span></div></div>`).join('');
 }
 
-/* ---------------- helper: delete all MS renumber if needed (optional) ---------------- */
-/* We rely on normalizeMsAndRender to reassign ms based on order when onValue triggers */
+// ====== Logout ======
+function logout(){ location.reload(); }
 
-/* ---------------- wire login button & pre-load users ---------------- */
+// ====== Helpers ======
+function buildHeroUIForAdd(){ buildHeroSkinUI(); }
 el("btnLogin").addEventListener("click", doLogin);
+el("btnLogout").addEventListener("click", logout);
 
-// preload users (non-block)
-loadRemoteUsers();
+// pre-load users
+loadUsers();
+
+// expose closePopup to global
+window.closePopup = closePopup;
 </script>
 </body>
 </html>
