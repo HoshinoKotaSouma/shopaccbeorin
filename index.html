@@ -1033,6 +1033,25 @@ const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhog
 const HEROES_NAMES_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/HEROES_NAMES.txt";
 const HEROES_SKINS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/HEROES_SKINS.txt";
 
+// ====== FIREBASE CONFIG ======
+const firebaseConfig = {
+  apiKey: "AIzaSyBgkwN-ZLZ6Gv46NZmHQqNYiZYKQ6Zj9b4",
+  authDomain: "quanlytaikhoanctvhg.firebaseapp.com",
+  databaseURL: "https://quanlytaikhoanctvhg-default-rtdb.firebaseio.com",
+  projectId: "quanlytaikhoanctvhg",
+  storageBucket: "quanlytaikhoanctvhg.firebasestorage.app",
+  messagingSenderId: "702694949499",
+  appId: "1:702694949499:web:ad5a0ea230c00150cbd8de"
+};
+
+// ====== Firebase SDK imports ======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ====== Init Firebase ======
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 // ====== STATE ======
 let usersRemote = null;
 let currentUser = null;
@@ -1382,6 +1401,29 @@ function fadeOutOverlay(cb){
   }, 900);
 }
 
+// ====== FIREBASE ACCOUNTS MANAGEMENT ======
+function listenAccounts(){
+  const accountsRef = ref(db, "accounts");
+  onValue(accountsRef, snapshot => {
+    const val = snapshot.val() || {};
+    accountsCache = val;
+    normalizeMsAndRender();
+    updateStats();
+  });
+}
+
+function normalizeMsAndRender(){
+  const entries = Object.entries(accountsCache);
+  entries.sort((a,b)=> a[0].localeCompare(b[0]));
+  const newCache = {};
+  for(let i=0;i<entries.length;i++){
+    const [k,obj] = entries[i];
+    newCache[k] = Object.assign({}, obj, { ms: String(i+1).padStart(3,'0') });
+  }
+  accountsCache = newCache;
+  render();
+}
+
 // ====== Start app ======
 async function startApp(){
   el("appCard").style.display = "block";
@@ -1394,7 +1436,7 @@ async function startApp(){
   
   initTheme();
   buildHeroSkinUI();
-  listenAccounts();
+  listenAccounts(); // KẾT NỐI FIREBASE - DỮ LIỆU SẼ HIỆN LẠI
   resetLogoutTimer();
   
   document.addEventListener('mousemove', resetLogoutTimer);
@@ -1529,6 +1571,294 @@ function manageSkins() {
   el("popup").style.display = "flex";
 }
 
+// ====== RENDER TABLE (FIREBASE) ======
+function render(){
+  const tbody = document.querySelector("#accTable tbody");
+  const thead = document.querySelector("#accTable thead tr");
+  tbody.innerHTML = "";
+  
+  if(currentUser && currentUser.role === "admin"){ 
+    thead.innerHTML = `
+      <th style="width:60px"><i class="fas fa-hashtag"></i> MS</th>
+      <th><i class="fas fa-user"></i> Username</th>
+      <th><i class="fas fa-key"></i> Password</th>
+      <th><i class="fas fa-tag"></i> Giá</th>
+      <th><i class="fas fa-tshirt"></i> Skin</th>
+      <th style="width:100px"><i class="fas fa-image"></i> Ảnh</th>
+      <th><i class="fas fa-power-off"></i> TT</th>
+      <th style="width:220px"><i class="fas fa-cogs"></i> Hành động</th>
+    `; 
+  } else { 
+    thead.innerHTML = `
+      <th style="width:60px"><i class="fas fa-hashtag"></i> MS</th>
+      <th><i class="fas fa-tag"></i> Giá</th>
+      <th><i class="fas fa-tshirt"></i> Skin</th>
+      <th style="width:100px"><i class="fas fa-image"></i> Ảnh</th>
+      <th><i class="fas fa-power-off"></i> TT</th>
+    `; 
+  }
+  
+  const filterText = (el("filter").value || "").toLowerCase();
+  const minPrice = parseInt(el("filterMinPrice").value) || 0;
+  const maxPrice = parseInt(el("filterMaxPrice").value) || Infinity;
+  const minSkins = parseInt(el("filterMinSkins").value) || 0;
+  const statusFilter = el("filterStatus").value;
+  
+  const arr = Object.entries(accountsCache).map(([k,v])=>({ key:k, ...v }));
+  
+  arr.forEach((a, idx) => {
+    const skinCount = a.skins ? Object.values(a.skins).flat().length : 0;
+    const price = parseInt(a.price) || 0;
+    
+    if (minPrice > 0 && price < minPrice) return;
+    if (maxPrice < Infinity && price > maxPrice) return;
+    if (minSkins > 0 && skinCount < minSkins) return;
+    if (statusFilter && a.status !== statusFilter) return;
+    
+    const flat = ((a.ms||"") + " " + (a.username||"") + " " + (a.price||"") + " " + (skinSummary(a))).toLowerCase();
+    if(filterText && !flat.includes(filterText)) return;
+    
+    const tr = document.createElement("tr");
+    tr.className = a.tag === 'hot' ? 'tr-hot' : a.tag === 'new' ? 'tr-new' : a.status === 'OFF' ? 'tr-sold' : '';
+    
+    if(currentUser.role === "admin"){
+      tr.innerHTML = `
+        <td><strong>${a.ms}</strong></td>
+        <td>${a.username||""}</td>
+        <td>${a.password||""}</td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>${a.image?'<img class="thumb" src="'+a.image+'">':""}</td>
+        <td>
+          <span class="cute-badge" style="background:${a.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+            ${a.status||"OFF"} ${a.tag ? `(${a.tag === 'hot' ? '🔥' : '🆕'})` : ''}
+          </span>
+        </td>
+        <td>
+          <button data-key="${a.key}" class="btn-edit" style="background:linear-gradient(135deg, #339af0, #228be6)">
+            <i class="fas fa-edit"></i> Sửa
+          </button>
+          <button data-key="${a.key}" class="btn-del" style="background:linear-gradient(135deg, #ff6b6b, #fa5252)">
+            <i class="fas fa-trash"></i> Xóa
+          </button>
+          <button data-key="${a.key}" class="btn-view">
+            <i class="fas fa-eye"></i> Xem
+          </button>
+          <button data-key="${a.key}" class="btn-copy" title="Copy password" style="background:linear-gradient(135deg, #94d82d, #82c91e)">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+        </td>
+      `; 
+    } else {
+      tr.innerHTML = `
+        <td><strong>${a.ms}</strong></td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>${a.image?'<img class="thumb" src="'+a.image+'">':""}</td>
+        <td>
+          <span class="cute-badge" style="background:${a.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+            ${a.status||"OFF"} ${a.tag ? `(${a.tag === 'hot' ? '🔥' : '🆕'})` : ''}
+          </span>
+        </td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+  
+  if(currentUser && currentUser.role === "admin"){
+    document.querySelectorAll(".btn-edit").forEach(b=>b.onclick = e=>openEditForm(b.dataset.key));
+    document.querySelectorAll(".btn-del").forEach(b=>b.onclick = e=>deleteAccountConfirm(b.dataset.key));
+    document.querySelectorAll(".btn-view").forEach(b=>b.onclick = e=>openViewSkin(b.dataset.key));
+    document.querySelectorAll(".btn-copy").forEach(b=>b.onclick = e=>copyPassword(b.dataset.key));
+  }
+}
+
+// ====== ADD ACCOUNT (FIREBASE) ======
+async function addAccount(){
+  if(!currentUser || currentUser.role !== "admin"){ 
+    showToast("Chỉ admin được thêm acc", "error"); 
+    return; 
+  }
+  const u = el("new_user").value.trim();
+  const p = el("new_pass").value;
+  const price = el("new_price").value.trim();
+  const img = el("new_img").value.trim();
+  const status = el("new_status").value;
+  const tag = el("new_tag").value;
+  
+  if(!u || !p){ 
+    showToast("Nhập username + password", "error"); 
+    return; 
+  }
+  
+  if (selectedHeroes.size === 0) {
+    showToast("Vui lòng chọn ít nhất một tướng! 🎯", "warning");
+    return;
+  }
+  
+  const skins = getSelectedSkins();
+  
+  try{
+    const newRef = push(ref(db, "accounts"));
+    await set(newRef, { 
+      username: u, 
+      password: p, 
+      price: price, 
+      image: img, 
+      status: status, 
+      tag: tag,
+      skins: skins,
+      createdAt: new Date().toISOString()
+    });
+    
+    // Reset form
+    el("new_user").value = ""; 
+    el("new_pass").value = ""; 
+    el("new_price").value = ""; 
+    el("new_img").value = "";
+    el("new_status").value = "ON";
+    el("new_tag").value = "";
+    clearSelection();
+    
+    showToast("Thêm tài khoản thành công! 🎉", "success");
+  }catch(e){ 
+    console.error(e); 
+    showToast("Lỗi thêm acc: "+e.message, "error"); 
+  }
+}
+
+// ====== EDIT ACCOUNT (FIREBASE) ======
+function openEditForm(key){
+  const node = accountsCache[key];
+  if(!node) return showToast("Không tìm thấy acc", "error");
+  const html = `
+    <h3><i class="fas fa-edit"></i> Sửa acc MS ${node.ms||''}</h3>
+    <div style="display:grid;gap:12px;margin-top:16px">
+      <div><label><i class="fas fa-user"></i> Username: <input id="edt_user" value="${node.username||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-key"></i> Password: <input id="edt_pass" value="${node.password||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-tag"></i> Giá: <input id="edt_price" value="${node.price||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-image"></i> Ảnh: <input id="edt_img" value="${node.image||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-certificate"></i> Tag: 
+        <select id="edt_tag" style="width:100%">
+          <option value="">Không tag</option>
+          <option value="hot">🔥 HOT</option>
+          <option value="new">🆕 NEW</option>
+        </select>
+      </label></div>
+      <div><label><i class="fas fa-power-off"></i> TT: 
+        <select id="edt_status" style="width:100%">
+          <option>ON</option>
+          <option>OFF</option>
+        </select>
+      </label></div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px">
+      <button id="saveEdit" style="flex:1"><i class="fas fa-save"></i> Lưu</button>
+      <button id="cancelEdit" class="ghost" style="flex:1"><i class="fas fa-times"></i> Hủy</button>
+    </div>`;
+  
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+  document.getElementById("edt_status").value = node.status || "OFF";
+  document.getElementById("edt_tag").value = node.tag || "";
+  document.getElementById("cancelEdit").onclick = ()=>el("popup").style.display="none";
+  document.getElementById("saveEdit").onclick = async ()=>{
+    const u = document.getElementById("edt_user").value;
+    const p = document.getElementById("edt_pass").value;
+    const pr = document.getElementById("edt_price").value;
+    const img = document.getElementById("edt_img").value;
+    const tag = document.getElementById("edt_tag").value;
+    const st = document.getElementById("edt_status").value;
+    try{ 
+      await update(ref(db, "accounts/"+key), { 
+        username: u, 
+        password: p, 
+        price: pr, 
+        image: img,
+        tag: tag,
+        status: st 
+      }); 
+      el("popup").style.display="none"; 
+      showToast("Cập nhật thành công! ✅", "success");
+    }catch(e){
+      showToast("Lỗi update: "+e.message, "error");
+    }
+  };
+}
+
+// ====== DELETE ACCOUNT (FIREBASE) ======
+function deleteAccountConfirm(key){
+  if(!confirm("Xóa acc này?")) return;
+  remove(ref(db, "accounts/"+key))
+    .then(() => showToast("Đã xóa acc! 🗑️", "success"))
+    .catch(e=>showToast("Lỗi xóa: "+e.message, "error"));
+}
+
+// ====== VIEW SKIN DETAIL ======
+function openViewSkin(key){
+  const node = accountsCache[key];
+  if(!node) return showToast("Không tìm thấy", "error");
+  let html = `<h3><i class="fas fa-eye"></i> Chi tiết skin MS ${node.ms||''}</h3>`;
+  if(node.skins){
+    for(const h of Object.keys(node.skins)){ 
+      html += `
+        <div style="margin:12px 0;padding:12px;background:rgba(255,255,255,0.8);border-radius:8px">
+          <strong>${h}</strong>
+          <ul style="margin:8px 0;padding-left:20px">
+            ${node.skins[h].map(s=>`<li>${escapeHtml(s)}</li>`).join('')}
+          </ul>
+        </div>
+      `; 
+    }
+  } else html += "<p>Không có skin</p>";
+  html += `<div style="margin-top:16px"><button onclick="closePopup()"><i class="fas fa-times"></i> Đóng</button></div>`;
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+}
+
+// ====== COPY PASSWORD ======
+function copyPassword(key) {
+  const account = accountsCache[key];
+  if (account && account.password) {
+    navigator.clipboard.writeText(account.password).then(() => {
+      showToast('Đã copy password! 📋', 'success');
+    });
+  }
+}
+
+// ====== EXPORT CSV ======
+function exportCSV(){
+  const arr = Object.entries(accountsCache).map(([k,v])=>v);
+  const header = ['MS','Username','Password','Price','Skins','Image','Status','Tag'];
+  const rows = [header].concat(arr.map(a=>[
+    a.ms||'', 
+    a.username||'', 
+    (currentUser && currentUser.role==='admin')?a.password:'', 
+    a.price||'', 
+    skinSummary(a), 
+    a.image||'', 
+    a.status||'',
+    a.tag||''
+  ]));
+  const csv = rows.map(r => r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); 
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); 
+  a.href = url; 
+  a.download = `accounts-backup-${new Date().toISOString().split('T')[0]}.csv`; 
+  a.click(); 
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file CSV! 📊', 'success');
+}
+
+// ====== HELPER FUNCTIONS ======
+function skinSummary(a){
+  if(!a.skins) return "";
+  return Object.keys(a.skins).map(h => `${h}(${a.skins[h].length})`).join(", ");
+}
+
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
 // ====== IMPORT FUNCTIONALITY ======
 function toggleImportSection() {
   const section = el('importSection');
@@ -1656,6 +1986,65 @@ function formatPrice(price) {
   return isNaN(num) ? '0' : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
+// ====== FIND PANEL ======
+function openFindPanel(){
+  if(!currentUser || currentUser.role !== 'ctv') return showToast("Chức năng tìm chỉ dành cho CTV", "warning");
+  
+  const html = `
+    <h3><i class="fas fa-search"></i> Tìm Acc</h3>
+    <div style="margin-top:16px">
+      <div style="display:flex;gap:12px;align-items:center">
+        <i class="fas fa-hashtag"></i>
+        <span>Nhập MS (vd: 001):</span>
+        <input id="findMS" style="flex:1">
+        <button id="doFindMS"><i class="fas fa-search"></i> Tìm</button>
+      </div>
+      <div id="findResult" style="margin-top:16px"></div>
+    </div>
+    <div style="margin-top:16px">
+      <button onclick="closePopup()"><i class="fas fa-times"></i> Đóng</button>
+    </div>`;
+  
+  el("popupContent").innerHTML = html; 
+  el("popup").style.display = "flex";
+  
+  el("doFindMS").onclick = ()=>{ 
+    const ms = el("findMS").value.trim(); 
+    const result = Object.values(accountsCache).find(acc => acc.ms === ms);
+    const findResult = el("findResult");
+    
+    if (result) {
+      findResult.innerHTML = `
+        <div style="padding:16px;border-radius:12px;border:2px solid #eef; background:rgba(255,255,255,0.9)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong><i class="fas fa-hashtag"></i> MS: ${result.ms}</strong>
+              <span style="margin-left:16px"><i class="fas fa-tag"></i> Giá: ${result.price}</span>
+            </div>
+            <span class="cute-badge" style="background:${result.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+              ${result.status}
+            </span>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+            ${result.image?'<img src="'+result.image+'" class="thumb" style="flex-shrink:0">':''}
+            <div style="flex:1">
+              <div><strong>Skins:</strong> ${skinSummary(result)}</div>
+              ${result.tag ? `<div style="margin-top:4px"><strong>Tag:</strong> ${result.tag === 'hot' ? '🔥 HOT' : '🆕 NEW'}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      findResult.innerHTML = `
+        <div style="text-align:center;padding:20px;background:rgba(255,255,255,0.8);border-radius:12px">
+          <i class="fas fa-search" style="font-size:48px;color:#ccc;margin-bottom:12px"></i>
+          <div>Không tìm thấy kết quả nào</div>
+        </div>
+      `;
+    }
+  };
+}
+
 // ====== Close popup ======
 function closePopup(){ el("popup").style.display = "none"; }
 
@@ -1674,9 +2063,6 @@ loadUsers();
 
 // expose closePopup to global
 window.closePopup = closePopup;
-
-// Note: Firebase and other backend functions are removed for simplicity
-// You'll need to implement your own data storage system
 </script>
 </body>
 </html>
