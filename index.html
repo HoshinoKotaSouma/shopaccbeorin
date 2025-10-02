@@ -869,6 +869,9 @@ img.thumb:hover {
         <button id="btnStats" class="ghost"><i class="fas fa-chart-bar"></i> Thống kê</button>
         <button id="btnManageSkins" class="ghost"><i class="fas fa-palette"></i> Skin</button>
         <button id="btnImport" class="ghost"><i class="fas fa-file-import"></i> Import</button>
+        <button id="btnDeleteAll" class="ghost" style="background:linear-gradient(135deg, #ff6b6b, #fa5252); display:none">
+          <i class="fas fa-trash"></i> 🗑️ XÓA 329 ACC
+        </button>
         <button id="btnExport" class="ghost"><i class="fas fa-file-export"></i> Xuất CSV</button>
         <button id="btnTheme" class="theme-switch">🌙</button>
         <button id="btnLogout" class="ghost"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -1470,6 +1473,7 @@ function listenAccounts(){
     accountsCache = val;
     normalizeMsAndRender();
     updateStats();
+    checkAndShowDeleteButton();
   });
 }
 
@@ -1483,6 +1487,48 @@ function normalizeMsAndRender(){
   }
   accountsCache = newCache;
   render();
+}
+
+// ====== XÓA 329 ACC ======
+function checkAndShowDeleteButton() {
+  const totalAccounts = Object.keys(accountsCache).length;
+  const deleteButton = el('btnDeleteAll');
+  
+  if (totalAccounts >= 329) {
+    deleteButton.style.display = 'inline-block';
+    showToast(`⚠️ Phát hiện ${totalAccounts} accounts cần xóa!`, 'warning');
+  } else {
+    deleteButton.style.display = 'none';
+  }
+}
+
+async function deleteAll329Accounts() {
+  const totalAccounts = Object.keys(accountsCache).length;
+  
+  if (totalAccounts < 329) {
+    showToast('Không đủ 329 accounts để xóa!', 'error');
+    return;
+  }
+  
+  if (!confirm(`🚨 CẢNH BÁO: Bạn sắp xóa VĨNH VIỄN ${totalAccounts} accounts!\n\nHành động này KHÔNG THỂ HOÀN TÁC. Bạn có chắc chắn?`)) {
+    return;
+  }
+  
+  showToast('Đang xóa tất cả accounts...', 'info');
+  
+  try {
+    // Xóa toàn bộ accounts
+    await remove(ref(db, "accounts"));
+    
+    showToast(`✅ Đã xóa thành công ${totalAccounts} accounts!`, 'success');
+    
+    // Ẩn nút xóa sau khi hoàn thành
+    el('btnDeleteAll').style.display = 'none';
+    
+  } catch (error) {
+    console.error('Lỗi xóa accounts:', error);
+    showToast('❌ Lỗi xóa accounts!', 'error');
+  }
 }
 
 // ====== Start app ======
@@ -1512,6 +1558,7 @@ async function startApp(){
   el("btnManageSkins").onclick = manageSkins;
   el("btnTheme").onclick = toggleTheme;
   el("btnImport").onclick = toggleImportSection;
+  el("btnDeleteAll").onclick = deleteAll329Accounts;
   el("btnAdvancedFilter").onclick = toggleAdvancedFilter;
   el("btnApplyFilter").onclick = applyAdvancedFilter;
   el("btnResetFilter").onclick = resetAdvancedFilter;
@@ -1942,11 +1989,13 @@ function skinSummary(a){
 
 function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-// ====== IMPORT FUNCTIONALITY ======
+// ====== IMPORT FUNCTIONALITY - ĐÃ SỬA ======
 function toggleImportSection() {
   const section = el('importSection');
   section.style.display = section.style.display === 'none' ? 'block' : 'none';
 }
+
+let parsedAccountsForImport = [];
 
 function parseImportData() {
   const importData = el('importData').value.trim();
@@ -1956,94 +2005,143 @@ function parseImportData() {
   }
   
   const lines = importData.split('\n').filter(line => line.trim());
-  const parsedAccounts = [];
+  parsedAccountsForImport = [];
   
   lines.forEach((line, index) => {
     try {
       const account = parseAccountLine(line);
       if (account) {
-        parsedAccounts.push(account);
+        parsedAccountsForImport.push(account);
       }
     } catch (error) {
       console.error(`Lỗi phân tích dòng ${index + 1}:`, error);
     }
   });
   
-  if (parsedAccounts.length === 0) {
+  if (parsedAccountsForImport.length === 0) {
     showToast('Không thể phân tích dữ liệu từ text!', 'error');
     return;
   }
   
-  showImportPreview(parsedAccounts);
+  showImportPreview(parsedAccountsForImport);
   el('btnImportAccounts').disabled = false;
-  el('importStatus').textContent = `Đã phân tích ${parsedAccounts.length} tài khoản`;
-  showToast(`Đã phân tích thành công ${parsedAccounts.length} tài khoản!`, 'success');
+  el('importStatus').textContent = `Đã phân tích ${parsedAccountsForImport.length} tài khoản`;
+  showToast(`Đã phân tích thành công ${parsedAccountsForImport.length} tài khoản!`, 'success');
 }
 
 function parseAccountLine(line) {
-  const parts = line.split(' | ');
-  if (parts.length < 3) return null;
-  
-  // Parse username and password
-  const [user, pass] = parts[0].split(':');
-  if (!user || !pass) return null;
-  
-  const account = {
-    id: Date.now() + Math.random(),
-    user: user.trim(),
-    pass: pass.trim(),
-    status: 'ON',
-    tag: '',
-    img: '',
-    createdAt: new Date().toISOString()
-  };
-  
-  // Parse other fields
-  parts.forEach(part => {
-    if (part.includes('NAME :')) {
-      account.name = part.split('NAME :')[1]?.trim();
-    } else if (part.includes('RANK :')) {
-      account.rank = part.split('RANK :')[1]?.trim();
-    } else if (part.includes('LEVEL :')) {
-      account.level = parseInt(part.split('LEVEL :')[1]) || 0;
-    } else if (part.includes('HERO :')) {
-      account.heroCount = parseInt(part.split('HERO :')[1]) || 0;
-    } else if (part.includes('SKIN :')) {
-      account.skinCount = parseInt(part.split('SKIN :')[1]) || 0;
-    } else if (part.includes('SS :')) {
-      const skinPart = part.split('SS :')[1];
-      if (skinPart) {
-        const skinMatch = skinPart.match(/\[(.*?)\]/);
-        if (skinMatch && skinMatch[1]) {
-          account.skins = skinMatch[1].split(', ').filter(s => s.trim());
-        }
-      }
+  try {
+    const parts = line.split('|').map(part => part.trim());
+    if (parts.length < 2) return null;
+    
+    const account = {
+      username: '',
+      password: '',
+      info: line,
+      price: '0',
+      status: 'ON',
+      tag: '',
+      skins: {},
+      createdAt: new Date().toISOString()
+    };
+    
+    // Parse username và password
+    const loginPart = parts[0];
+    const loginMatch = loginPart.match(/([^:]+):(.+)/);
+    if (loginMatch) {
+      account.username = loginMatch[1].trim();
+      account.password = loginMatch[2].trim();
     }
-  });
-  
-  // Generate price based on heroes and skins
-  const basePrice = 50000;
-  const heroPrice = (account.heroCount || 0) * 10000;
-  const skinPrice = (account.skinCount || 0) * 5000;
-  const rareSkinBonus = (account.skins?.filter(s => s.includes('Siêu việt') || s.includes('SSS')).length || 0) * 20000;
-  
-  account.price = formatPrice(basePrice + heroPrice + skinPrice + rareSkinBonus);
-  account.info = `Rank: ${account.rank || 'Unknown'} | Level: ${account.level || 0} | Tướng: ${account.heroCount || 0} | Skin: ${account.skinCount || 0}`;
-  
-  return account;
+    
+    let skinCount = 0, heroCount = 0, level = 0, rank = '';
+    const skinsData = {};
+    
+    // Hàm parse skin từ các section
+    const parseSkinSection = (part, prefix) => {
+      const regex = new RegExp(prefix + '\\s*:\\s*\\d+\\s*\\[([^\\]]+)\\]');
+      const match = part.match(regex);
+      if (match) {
+        const skins = match[1].split(',').map(s => s.trim()).filter(s => s);
+        skins.forEach(skin => {
+          // Tách hero và skin name (ví dụ: "Valhein Vũ khí tối thượng")
+          const words = skin.split(' ');
+          if (words.length >= 2) {
+            const hero = words[0]; // Tên hero là từ đầu tiên
+            const skinName = words.slice(1).join(' '); // Phần còn lại là tên skin
+            if (!skinsData[hero]) skinsData[hero] = [];
+            if (!skinsData[hero].includes(skinName)) {
+              skinsData[hero].push(skinName);
+            }
+          }
+        });
+      }
+    };
+    
+    parts.forEach(part => {
+      // Parse các thông tin cơ bản
+      if (part.includes('SKIN :')) {
+        const match = part.match(/SKIN :\s*(\d+)/);
+        if (match) skinCount = parseInt(match[1]);
+      }
+      if (part.includes('HERO :')) {
+        const match = part.match(/HERO :\s*(\d+)/);
+        if (match) heroCount = parseInt(match[1]);
+      }
+      if (part.includes('LEVEL :')) {
+        const match = part.match(/LEVEL :\s*(\d+)/);
+        if (match) level = parseInt(match[1]);
+      }
+      if (part.includes('RANK :')) {
+        const match = part.match(/RANK :\s*([^|]+)/);
+        if (match) rank = match[1].trim();
+      }
+      
+      // Parse các loại skin
+      parseSkinSection(part, 'SS');
+      parseSkinSection(part, 'SSS');
+      parseSkinSection(part, 'ANIME');
+      parseSkinSection(part, 'OTHER');
+    });
+    
+    account.skins = skinsData;
+    
+    // Tính giá
+    const basePrice = 50000;
+    const heroPrice = heroCount * 10000;
+    const skinPrice = skinCount * 5000;
+    const levelPrice = level * 1000;
+    let premiumBonus = 0;
+    
+    if (rank.includes('Kim')) premiumBonus += 20000;
+    if (rank.includes('Bạch')) premiumBonus += 30000;
+    if (rank.includes('Cao')) premiumBonus += 40000;
+    if (Object.keys(skinsData).length > 15) premiumBonus += 50000;
+    if (Object.keys(skinsData).length > 25) premiumBonus += 100000;
+    
+    account.price = (basePrice + heroPrice + skinPrice + levelPrice + premiumBonus).toString();
+    
+    return account;
+  } catch (error) {
+    console.error('Lỗi parse account:', error);
+    return null;
+  }
 }
 
-function showImportPreview(parsedAccounts) {
+function showImportPreview(accounts) {
   const previewList = el('previewList');
   previewList.innerHTML = '';
   
-  parsedAccounts.forEach((acc, index) => {
+  accounts.forEach((acc, index) => {
     const div = document.createElement('div');
     div.className = 'preview-item';
+    
+    const skinSummary = acc.skins ? Object.entries(acc.skins).map(([hero, skins]) => 
+      `${hero}(${skins.length})`
+    ).join(', ') : 'Không có skin';
+    
     div.innerHTML = `
-      <strong>${index + 1}. ${acc.user}:${acc.pass}</strong><br>
-      <small>${acc.info} | Giá: ${acc.price}</small>
-      ${acc.skins ? `<br><small>Skin: ${acc.skins.slice(0, 3).join(', ')}${acc.skins.length > 3 ? '...' : ''}</small>` : ''}
+      <strong>${index + 1}. ${acc.username}</strong><br>
+      <small>Pass: ${acc.password} | Giá: ${acc.price} | Skin: ${skinSummary}</small>
     `;
     previewList.appendChild(div);
   });
@@ -2051,9 +2149,38 @@ function showImportPreview(parsedAccounts) {
   el('importPreview').style.display = 'block';
 }
 
-function importAccounts() {
-  // This would be implemented based on your storage system
-  showToast('Chức năng import đang được phát triển!', 'info');
+async function importAccounts() {
+  if (!parsedAccountsForImport || parsedAccountsForImport.length === 0) {
+    showToast('Không có dữ liệu để import!', 'error');
+    return;
+  }
+  
+  if (!confirm(`Bạn có chắc chắn muốn import ${parsedAccountsForImport.length} tài khoản vào Firebase?`)) {
+    return;
+  }
+  
+  showToast('Đang import dữ liệu...', 'info');
+  
+  try {
+    let successCount = 0;
+    
+    for (const account of parsedAccountsForImport) {
+      try {
+        const newRef = push(ref(db, "accounts"));
+        await set(newRef, account);
+        successCount++;
+      } catch (error) {
+        console.error('Lỗi import account:', error);
+      }
+    }
+    
+    showToast(`Đã import thành công ${successCount}/${parsedAccountsForImport.length} tài khoản!`, 'success');
+    clearImport();
+    listenAccounts(); // Reload data
+  } catch (error) {
+    console.error('Lỗi import:', error);
+    showToast('Lỗi import dữ liệu!', 'error');
+  }
 }
 
 function clearImport() {
@@ -2061,12 +2188,7 @@ function clearImport() {
   el('importPreview').style.display = 'none';
   el('btnImportAccounts').disabled = true;
   el('importStatus').textContent = '';
-}
-
-// ====== UTILITY FUNCTIONS ======
-function formatPrice(price) {
-  const num = typeof price === 'string' ? parseInt(price.replace(/\./g, '')) : parseInt(price);
-  return isNaN(num) ? '0' : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  parsedAccountsForImport = [];
 }
 
 // ====== FIND PANEL ======
