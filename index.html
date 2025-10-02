@@ -1,5 +1,1377 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quản lý tài khoản Liên Quân</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --blue1: #e6f7ff;
+  --blue2: #f0faff;
+  --accent: #007acc;
+  --accent2: #66c2ff;
+  --muted: #666;
+  --success: #00c853;
+  --warning: #ff9800;
+  --error: #f44336;
+  --pink: #ff6b9d;
+  --purple: #9d4edd;
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="dark"] {
+  --blue1: #1a1a2e;
+  --blue2: #16213e;
+  --accent: #4dabf7;
+  --accent2: #339af0;
+  --muted: #adb5bd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, var(--blue1), var(--blue2));
+  min-height: 100vh;
+  color: #222;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
+}
+
+/* Floating Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(102, 194, 255, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(102, 194, 255, 0.6); }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+  40% {transform: translateY(-10px);}
+  60% {transform: translateY(-5px);}
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* Cute Elements */
+.cute-badge {
+  background: linear-gradient(45deg, var(--pink), var(--purple));
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  animation: float 3s ease-in-out infinite;
+}
+
+.sparkle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #fff 20%, transparent 70%);
+  border-radius: 50%;
+  animation: sparkle 2s linear infinite;
+}
+
+.wrap {
+  max-width: 1400px;
+  margin: 20px auto;
+  padding: 16px;
+  animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s;
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.15),
+    0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .card {
+  background: rgba(45, 55, 72, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1, h2, h3 {
+  margin: 0 0 16px;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+h1::after, h2::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+}
+
+input, select, textarea {
+  padding: 12px 16px;
+  border: 2px solid #cdeeff;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.9);
+  font-family: 'Poppins', sans-serif;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(102, 194, 255, 0.3);
+  transform: scale(1.02);
+}
+
+[data-theme="dark"] input, 
+[data-theme="dark"] select, 
+[data-theme="dark"] textarea {
+  background: rgba(74, 85, 104, 0.9);
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+button {
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: 0;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 10px 25px rgba(102, 194, 255, 0.4),
+    0 5px 10px rgba(102, 194, 255, 0.2);
+  animation: glow 2s ease-in-out infinite;
+}
+
+button:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+button.ghost {
+  background: rgba(246, 253, 255, 0.8);
+  border: 2px solid var(--accent2);
+  color: var(--accent);
+  backdrop-filter: blur(10px);
+}
+
+button.ghost:hover {
+  background: var(--accent2);
+  color: white;
+}
+
+[data-theme="dark"] button.ghost {
+  background: rgba(74, 85, 104, 0.8);
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+/* Table styles for mobile swipe */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 16px;
+  border-radius: 12px;
+  position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  min-width: 800px;
+}
+
+th, td {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  vertical-align: middle;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+th:hover, td:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] th, 
+[data-theme="dark"] td {
+  background: rgba(74, 85, 104, 0.9);
+  color: #e2e8f0;
+}
+
+th {
+  background: linear-gradient(135deg, var(--blue1), var(--blue2));
+  color: var(--accent);
+  font-weight: 600;
+  position: relative;
+}
+
+[data-theme="dark"] th {
+  background: linear-gradient(135deg, #2d3748, #4a5568);
+}
+
+img.thumb {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #dff4ff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+img.thumb:hover {
+  transform: scale(1.1) rotate(2deg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid #cfefff;
+  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(230,247,255,0.98), rgba(240,250,255,0.98));
+  z-index: 9999;
+  text-align: center;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] #loadingOverlay {
+  background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(22,33,62,0.98));
+}
+
+#loadingOverlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+}
+
+#popupContent {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 900px;
+  max-height: 80%;
+  overflow: auto;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] #popupContent {
+  background: rgba(74, 85, 104, 0.95);
+  color: #e2e8f0;
+}
+
+.hero-grid label {
+  margin-right: 12px;
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(247, 253, 255, 0.8);
+  border: 2px solid #e6fbff;
+  border-radius: 12px;
+  margin: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.hero-grid label:hover {
+  background: rgba(230, 247, 255, 0.9);
+  border-color: var(--accent2);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.hero-grid input:checked + span {
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 2px 4px rgba(0, 122, 204, 0.2);
+}
+
+.skin-grid label {
+  display: inline-block;
+  margin: 8px;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: rgba(247, 253, 255, 0.8);
+  border: 2px solid #e6fbff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.skin-grid label:hover {
+  transform: translateY(-2px) scale(1.05);
+  border-color: var(--accent2);
+}
+
+[data-theme="dark"] .skin-grid label {
+  background: rgba(45, 55, 72, 0.8);
+  border-color: #4a5568;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--blue1), var(--blue2));
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px) scale(1.05);
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  color: white;
+  z-index: 10001;
+  transform: translateX(400px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 300px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.success {
+  background: linear-gradient(135deg, var(--success), #00e676);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, var(--error), #ff5252);
+}
+
+.toast.warning {
+  background: linear-gradient(135deg, var(--warning), #ffb74d);
+}
+
+.toast.info {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+.tr-hot {
+  border-left: 4px solid #ff4444 !important;
+  animation: pulse 2s infinite;
+}
+
+.tr-new {
+  border-left: 4px solid #44ff44 !important;
+}
+
+.tr-sold {
+  border-left: 4px solid var(--muted) !important;
+}
+
+.theme-switch {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  animation: bounce 2s infinite;
+}
+
+.theme-switch:hover {
+  transform: scale(1.2) rotate(15deg);
+}
+
+.advanced-filters {
+  background: rgba(230, 247, 255, 0.8);
+  padding: 16px;
+  border-radius: 15px;
+  margin: 16px 0;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.hero-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(230, 247, 255, 0.6);
+  border-radius: 15px;
+  border: 2px solid rgba(102, 194, 255, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.hero-section:hover {
+  border-color: var(--accent2);
+  transform: translateY(-2px);
+}
+
+.hero-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hero-skins {
+  margin-left: 24px;
+}
+
+.selected-heroes {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(240, 255, 244, 0.8);
+  border: 2px solid rgba(198, 246, 213, 0.6);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .selected-heroes {
+  background: rgba(45, 55, 72, 0.8);
+  border-color: #4a5568;
+}
+
+/* Import section */
+.import-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: rgba(255, 248, 225, 0.8);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.import-preview {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.preview-item {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid var(--accent);
+}
+
+.preview-item.error {
+  border-left-color: var(--error);
+  background: #ffe6e6;
+}
+
+/* Cute floating elements */
+.floating {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floating.heart {
+  color: #ff6b9d;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating.star {
+  color: #ffd700;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+/* Image upload button */
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #94d82d, #82c91e);
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(148, 216, 45, 0.4);
+}
+
+.upload-btn input {
+  display: none;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Swipe indicator for mobile */
+.swipe-indicator {
+  display: none;
+  text-align: center;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  animation: bounce 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  table, th, td {
+    font-size: 14px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .card {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Show swipe indicator on mobile */
+  .swipe-indicator {
+    display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 16px;
+    margin: 12px;
+  }
+  
+  button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    justify-content: center;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(230, 247, 255, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+/* Loading dots animation */
+@keyframes dotFlashing {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--accent);
+  color: var(--accent);
+  animation: dotFlashing 1s infinite linear;
+}
+
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--accent);
+  color: var(--accent);
+  animation: dotFlashing 1s infinite linear;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--accent);
+  color: var(--accent);
+  animation: dotFlashing 1s infinite linear;
+  animation-delay: 1s;
+}
+</style>
+</head>
+<body>
+<!-- Floating decorative elements -->
+<div class="floating heart" style="top: 10%; left: 5%; font-size: 24px;">💖</div>
+<div class="floating star" style="top: 20%; right: 8%; font-size: 20px;">⭐</div>
+<div class="floating heart" style="bottom: 15%; left: 7%; font-size: 18px;">💝</div>
+<div class="floating star" style="bottom: 25%; right: 5%; font-size: 22px;">🌟</div>
+
+<div class="wrap">
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastContainer"></div>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <img class="logo" src="https://raw.githubusercontent.com/HoshinoKotaSouma/shopaccbeorin/main/download%20(3).jpeg" alt="logo">
+        <div>
+          <div style="font-weight:700;color:var(--accent);font-size:20px">Cộng Tác Viên Hờ Gờ</div>
+          <div class="muted" style="display:flex;align-items:center;gap:5px">
+            <i class="fas fa-crown" style="color:gold"></i>
+            Hệ thống quản lý tài khoản
+          </div>
+        </div>
+      </div>
+      <button class="theme-switch" id="themeSwitch">🌙</button>
+    </div>
+    
+    <h2 style="margin-top:16px;display:flex;align-items:center;gap:10px">
+      <i class="fas fa-sign-in-alt"></i>
+      Đăng nhập
+    </h2>
+    
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+      <input id="login_username" placeholder="👤 Username" style="flex:1;min-width:200px">
+      <input id="login_password" placeholder="🔒 Password" type="password" style="flex:1;min-width:200px">
+      <button id="btnLogin" style="min-width:120px">
+        <i class="fas fa-rocket"></i> Đăng nhập
+      </button>
+    </div>
+    <p id="loginMsg" style="color:red;margin-top:12px;display:flex;align-items:center;gap:8px"></p>
+  </div>
+
+  <!-- APP -->
+  <div class="card" id="appCard" style="display:none">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:16px">
+      <h2 style="display:flex;align-items:center;gap:12px">
+        <i class="fas fa-tasks"></i>
+        📋 Quản lý tài khoản
+      </h2>
+      <div class="controls" style="margin-left:auto">
+        <div id="roleLabel" class="muted cute-badge"></div>
+        <input id="filter" placeholder="🔍 Lọc nhanh..." style="min-width:220px">
+        <button id="btnFind" class="ghost"><i class="fas fa-search"></i> Tìm Acc</button>
+        <button id="btnStats" class="ghost"><i class="fas fa-chart-bar"></i> Thống kê</button>
+        <button id="btnManageSkins" class="ghost"><i class="fas fa-palette"></i> Skin</button>
+        <button id="btnImport" class="ghost"><i class="fas fa-file-import"></i> Import</button>
+        <button id="btnExport" class="ghost"><i class="fas fa-file-export"></i> Xuất CSV</button>
+        <button id="btnTheme" class="theme-switch">🌙</button>
+        <button id="btnLogout" class="ghost"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <!-- STATS DASHBOARD -->
+    <div id="statsDashboard" style="display:none">
+      <h3 style="display:flex;align-items:center;gap:10px">
+        <i class="fas fa-chart-pie"></i>
+        📊 Dashboard Thống kê
+      </h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotal">0</div>
+          <div class="stat-label"><i class="fas fa-users"></i> Tổng số acc</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statAvailable">0</div>
+          <div class="stat-label"><i class="fas fa-check-circle"></i> Acc có sẵn</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statSold">0</div>
+          <div class="stat-label"><i class="fas fa-shopping-cart"></i> Đã bán</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statRare">0</div>
+          <div class="stat-label"><i class="fas fa-gem"></i> Acc hiếm</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <button id="btnMarkHot" class="ghost" style="background:linear-gradient(135deg, #ff6b6b, #ff8e8e)">
+        <i class="fas fa-fire"></i> 🔥 Đánh dấu HOT
+      </button>
+      <button id="btnMarkNew" class="ghost" style="background:linear-gradient(135deg, #51cf66, #69db7c)">
+        <i class="fas fa-certificate"></i> 🆕 Đánh dấu NEW
+      </button>
+      <button id="btnAdvancedFilter" class="ghost">
+        <i class="fas fa-sliders-h"></i> 🎚️ Lọc nâng cao
+      </button>
+    </div>
+
+    <!-- ADVANCED FILTERS -->
+    <div id="advancedFilters" class="advanced-filters" style="display:none">
+      <h4 style="display:flex;align-items:center;gap:8px">
+        <i class="fas fa-filter"></i>
+        🎚️ Lọc nâng cao
+      </h4>
+      <div class="filter-group">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fas fa-tag"></i>
+          <label>Khoảng giá:</label>
+          <input type="number" id="filterMinPrice" placeholder="Từ" style="width:100px">
+          <input type="number" id="filterMaxPrice" placeholder="Đến" style="width:100px">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fas fa-tshirt"></i>
+          <label>Số skin tối thiểu:</label>
+          <input type="number" id="filterMinSkins" placeholder="0" style="width:80px">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fas fa-power-off"></i>
+          <label>Trạng thái:</label>
+          <select id="filterStatus">
+            <option value="">Tất cả</option>
+            <option value="ON">Có sẵn</option>
+            <option value="OFF">Đã bán</option>
+          </select>
+        </div>
+        <button id="btnApplyFilter" class="ghost"><i class="fas fa-check"></i> Áp dụng</button>
+        <button id="btnResetFilter" class="ghost"><i class="fas fa-undo"></i> Reset</button>
+      </div>
+    </div>
+
+    <!-- ADMIN FORM -->
+    <div id="adminPanel" style="display:none;margin-top:16px">
+      <h3 style="display:flex;align-items:center;gap:10px">
+        <i class="fas fa-plus-circle"></i>
+        ➕ Thêm tài khoản
+      </h3>
+      
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <input id="new_user" placeholder="👤 Username" style="flex:1;min-width:150px">
+        <input id="new_pass" placeholder="🔒 Password" style="flex:1;min-width:150px">
+        <input id="new_price" placeholder="💰 Giá Acc" style="flex:1;min-width:120px">
+        <input id="new_img" placeholder="🖼️ Link ảnh" style="flex:2;min-width:200px">
+        <select id="new_status" style="min-width:100px">
+          <option>ON</option>
+          <option>OFF</option>
+        </select>
+        <select id="new_tag" style="min-width:120px">
+          <option value="">Không tag</option>
+          <option value="hot">🔥 HOT</option>
+          <option value="new">🆕 NEW</option>
+        </select>
+      </div>
+
+      <!-- HERO & SKIN SELECTION -->
+      <div style="margin-top:20px">
+        <h4 style="display:flex;align-items:center;gap:8px">
+          <i class="fas fa-gamepad"></i>
+          🎯 Chọn tướng và skin
+        </h4>
+        
+        <!-- Selected Heroes Summary -->
+        <div id="selectedHeroes" class="selected-heroes" style="display:none">
+          <strong style="display:flex;align-items:center;gap:8px">
+            <i class="fas fa-list-check"></i>
+            📋 Tướng đã chọn:
+          </strong>
+          <div id="selectedHeroesList" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Heroes Grid -->
+        <div style="margin-top:16px">
+          <strong style="display:flex;align-items:center;gap:8px">
+            <i class="fas fa-users"></i>
+            Danh sách tướng:
+          </strong>
+          <div id="heroList" class="hero-grid" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Skin Selection for Selected Heroes -->
+        <div id="skinSelection" style="margin-top:20px; display: none;">
+          <strong style="display:flex;align-items:center;gap:8px">
+            <i class="fas fa-palette"></i>
+            🎭 Chọn skin cho các tướng:
+          </strong>
+          <div id="skinSections" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+        <button id="btnAdd" style="background:linear-gradient(135deg, #51cf66, #37b24d)">
+          <i class="fas fa-plus"></i> Thêm tài khoản
+        </button>
+        <button id="btnSaveDraft" class="ghost">
+          <i class="fas fa-save"></i> 💾 Lưu nháp
+        </button>
+        <button id="btnLoadDraft" class="ghost">
+          <i class="fas fa-folder-open"></i> 📂 Mở nháp
+        </button>
+        <button id="btnClearSelection" class="ghost" style="background:linear-gradient(135deg, #ff6b6b, #fa5252)">
+          <i class="fas fa-trash"></i> 🗑️ Xóa chọn
+        </button>
+      </div>
+    </div>
+
+    <!-- IMPORT SECTION -->
+    <div id="importSection" class="import-section" style="display:none">
+      <h3 style="display:flex;align-items:center;gap:10px">
+        <i class="fas fa-file-import"></i>
+        📥 Import tài khoản từ dữ liệu text
+      </h3>
+      
+      <div style="margin:16px 0">
+        <textarea id="importData" placeholder="Dán dữ liệu tài khoản vào đây (mỗi acc một dòng)...
+Ví dụ: pkeohero197:Cocailon2812 | NAME : w8.4'affc | RANK : B.Kim V | LEVEL : 30 | QH : 0 | HERO : 114 | SKIN : 421 | BAN : NO | EMAIL : YES [ĐÃ XÁC THỰC] | SDT : YES | CMND : YES | AUTHEN : YES | FB : DIE | SÒ : 0 | QUỐC GIA : VN | LOGIN LẦN CUỐI : 09:00:01 26-07-2025 | SS : 29 [Valhein Vũ khí tối thượng, Yorn Thế tử nguyệt tộc, Murad Siêu việt, ...] | SSS : 0 [] | ANIME : 0 [] | OTHER : 2 [Kaine Chiến binh kim quang, Kaine Thiếu chủ bóng đêm] | TRẠNG THÁI : ACC FULL…" 
+          style="width:100%;height:150px;resize:vertical"></textarea>
+      </div>
+      
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <button id="btnParseData"><i class="fas fa-cogs"></i> Phân tích dữ liệu</button>
+        <button id="btnImportAccounts" class="ghost" disabled><i class="fas fa-download"></i> Import tài khoản</button>
+        <button id="btnClearImport" class="ghost"><i class="fas fa-times"></i> Xóa dữ liệu</button>
+        <span id="importStatus" class="muted"></span>
+      </div>
+      
+      <div id="importPreview" class="import-preview" style="display:none">
+        <h4>Preview tài khoản sẽ import:</h4>
+        <div id="previewList"></div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT TABLE -->
+    <h3 style="margin-top:24px;display:flex;align-items:center;gap:10px">
+      <i class="fas fa-list"></i>
+      📋 Danh sách tài khoản
+    </h3>
+    
+    <!-- Swipe indicator for mobile -->
+    <div class="swipe-indicator">
+      <i class="fas fa-arrows-alt-h"></i> Vuốt sang để xem thêm thông tin
+    </div>
+    
+    <div class="table-container">
+      <table id="accTable">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="loadingOverlay">
+  <div style="text-align:center;animation:slideIn 0.8s cubic-bezier(0.4,0,0.2,1)">
+    <div style="font-size:48px;margin-bottom:20px">🎮</div>
+    <h1 id="welcomeText" style="font-size:2.5em;margin-bottom:20px">Welcomeeee... 💙</h1>
+    <p id="roleMsg" style="font-size:1.2em;margin-bottom:20px"></p>
+    <div id="chooseAdmin" style="display:none;margin-top:20px">
+      <p style="font-weight:600;font-size:1.1em">Bạn là ai ?</p>
+      <div style="display:flex;gap:15px;justify-content:center;margin-top:15px">
+        <button id="who1" style="padding:12px 24px;font-size:16px">Giao Béo</button>
+        <button id="who2" style="padding:12px 24px;font-size:16px">Quỳnh Cute</button>
+      </div>
+    </div>
+    <p id="waitingText" style="display:none;font-weight:600;margin-top:20px;font-size:1.1em">
+      Đang tải <span class="dot-flashing"></span>
+    </p>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div id="popup"><div id="popupContent"></div></div>
+
+<script type="module">
 // ====== CONFIG ======
 const RAW_USERS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/accounts.json";
+const HEROES_NAMES_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/HEROES_NAMES.txt";
+const HEROES_SKINS_URL = "https://raw.githubusercontent.com/HoshinoKotaSouma/ctvhogo/refs/heads/main/HEROES_SKINS.txt";
+
+// ====== FIREBASE CONFIG ======
+const firebaseConfig = {
+  apiKey: "AIzaSyBgkwN-ZLZ6Gv46NZmHQqNYiZYKQ6Zj9b4",
+  authDomain: "quanlytaikhoanctvhg.firebaseapp.com",
+  databaseURL: "https://quanlytaikhoanctvhg-default-rtdb.firebaseio.com",
+  projectId: "quanlytaikhoanctvhg",
+  storageBucket: "quanlytaikhoanctvhg.firebasestorage.app",
+  messagingSenderId: "702694949499",
+  appId: "1:702694949499:web:ad5a0ea230c00150cbd8de"
+};
+
+// ====== Firebase SDK imports ======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ====== Init Firebase ======
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ====== STATE ======
+let usersRemote = null;
+let currentUser = null;
+let accountsCache = {};
+let dotsInterval = null;
+let logoutTimer = null;
+let selectedHeroes = new Set();
+let HERO_NAMES = [];
+let HERO_SKINS = {};
+
+const el = id => document.getElementById(id);
+
+// ====== LOAD HEROES DATA FROM GITHUB ======
+async function loadHeroesData() {
+  try {
+    // Load hero names
+    const namesRes = await fetch(HEROES_NAMES_URL + "?_=" + Date.now(), {cache: "no-store"});
+    if (namesRes.ok) {
+      const namesText = await namesRes.text();
+      HERO_NAMES = JSON.parse(namesText);
+    }
+    
+    // Load hero skins
+    const skinsRes = await fetch(HEROES_SKINS_URL + "?_=" + Date.now(), {cache: "no-store"});
+    if (skinsRes.ok) {
+      const skinsText = await skinsRes.text();
+      HERO_SKINS = JSON.parse(skinsText);
+    }
+    
+    console.log('Loaded heroes data:', HERO_NAMES.length, 'heroes');
+    return true;
+  } catch (e) {
+    console.error('Error loading heroes data:', e);
+    // Fallback to default data if files not found
+    HERO_NAMES = ["Airi", "Aleister", "Alice", "Allain", "Annette", "Arduin", "Arthur", "Arum"];
+    HERO_SKINS = {
+      "Airi": ["Bích hải thánh nữ", "Bạch Kiemono"],
+      "Aleister": ["HLV bất bại"],
+      "Alice": ["Eternal Sailor Chibi Moon", "Phi hành gia"],
+      "Allain": ["Hắc kiếm sĩ Kirito", "Kirito"],
+      "Annette": ["Nữ sinh trung học"],
+      "Arduin": ["Bạch vệ chiến giáp", "Ngạo Hổ Hàn Đao"],
+      "Arthur": ["Siêu Việt"],
+      "Arum": ["Vũ khúc long hổ", "Vũ khúc thần sứ"]
+    };
+    return false;
+  }
+}
+
+// ====== TOAST NOTIFICATION ======
+function showToast(message, type = 'info', duration = 3000) {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px">
+      <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info'}-circle"></i>
+      <span>${message}</span>
+    </div>
+  `;
+  el('toastContainer').appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 100);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+// ====== THEME MANAGEMENT ======
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.body.setAttribute('data-theme', savedTheme);
+  updateThemeButton(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.body.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeButton(newTheme);
+  showToast(`Đã chuyển sang chế độ ${newTheme === 'light' ? 'sáng 🌞' : 'tối 🌙'}`, 'success');
+}
+
+function updateThemeButton(theme) {
+  const buttons = document.querySelectorAll('.theme-switch');
+  buttons.forEach(btn => {
+    btn.textContent = theme === 'light' ? '🌙' : '☀️';
+    btn.innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+  });
+}
+
+// ====== HERO & SKIN MANAGEMENT ======
+function buildHeroSkinUI() {
+  const hl = el('heroList');
+  hl.innerHTML = '';
+  
+  HERO_NAMES.forEach(hero => {
+    const label = document.createElement('label');
+    label.innerHTML = `
+      <input type="checkbox" class="hero-checkbox" value="${hero}" data-hero="${hero}">
+      <span>${hero}</span>
+    `;
+    hl.appendChild(label);
+  });
+  
+  hl.addEventListener('change', (e) => {
+    if (e.target.classList.contains('hero-checkbox')) {
+      const hero = e.target.value;
+      if (e.target.checked) {
+        selectedHeroes.add(hero);
+      } else {
+        selectedHeroes.delete(hero);
+        const skinSection = document.getElementById(`skin-section-${hero}`);
+        if (skinSection) skinSection.remove();
+      }
+      updateSelectedHeroesDisplay();
+      updateSkinSelectionDisplay();
+    }
+  });
+}
+
+function updateSelectedHeroesDisplay() {
+  const selectedHeroesDiv = el('selectedHeroes');
+  const selectedHeroesList = el('selectedHeroesList');
+  
+  if (selectedHeroes.size > 0) {
+    selectedHeroesDiv.style.display = 'block';
+    selectedHeroesList.innerHTML = Array.from(selectedHeroes).map(hero => 
+      `<span style="display:inline-block;padding:6px 12px;margin:4px;background:linear-gradient(135deg, var(--accent), var(--accent2));color:white;border-radius:20px;font-weight:600">${hero}</span>`
+    ).join('');
+  } else {
+    selectedHeroesDiv.style.display = 'none';
+  }
+}
+
+function updateSkinSelectionDisplay() {
+  const skinSelection = el('skinSelection');
+  const skinSections = el('skinSections');
+  
+  if (selectedHeroes.size > 0) {
+    skinSelection.style.display = 'block';
+    
+    skinSections.innerHTML = '';
+    selectedHeroes.forEach(hero => {
+      if (!document.getElementById(`skin-section-${hero}`)) {
+        const heroSection = document.createElement('div');
+        heroSection.className = 'hero-section';
+        heroSection.id = `skin-section-${hero}`;
+        
+        heroSection.innerHTML = `
+          <div class="hero-header">
+            <strong>${hero}</strong>
+            <span class="muted">(${HERO_SKINS[hero] ? HERO_SKINS[hero].length : 0} skin)</span>
+          </div>
+          <div class="hero-skins" id="skins-${hero}">
+            ${renderSkinCheckboxes(hero)}
+          </div>
+        `;
+        
+        skinSections.appendChild(heroSection);
+      }
+    });
+  } else {
+    skinSelection.style.display = 'none';
+  }
+}
+
+function renderSkinCheckboxes(hero) {
+  const skins = HERO_SKINS[hero] || [];
+  return skins.map(skin => `
+    <label style="display:inline-block;margin:6px;padding:6px 12px;background:rgba(255,255,255,0.8);border-radius:8px;border:2px solid #dee2e6;transition:all 0.3s;cursor:pointer">
+      <input type="checkbox" class="skin-checkbox" data-hero="${hero}" value="${skin}">
+      ${skin}
+    </label>
+  `).join('');
+}
+
+function clearSelection() {
+  selectedHeroes.clear();
+  document.querySelectorAll('.hero-checkbox').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.skin-checkbox').forEach(cb => cb.checked = false);
+  updateSelectedHeroesDisplay();
+  updateSkinSelectionDisplay();
+  showToast('Đã xóa tất cả lựa chọn!', 'success');
+}
+
+function getSelectedSkins() {
+  const skins = {};
+  selectedHeroes.forEach(hero => {
+    const heroSkins = [];
+    document.querySelectorAll(`.skin-checkbox[data-hero="${hero}"]:checked`).forEach(cb => {
+      heroSkins.push(cb.value);
+    });
+    if (heroSkins.length > 0) skins[hero] = heroSkins;
+  });
+  return skins;
+}
+
+// ====== DRAFT MANAGEMENT ======
+function saveDraft() {
+  const draft = {
+    user: el('new_user').value,
+    pass: el('new_pass').value,
+    price: el('new_price').value,
+    img: el('new_img').value,
+    status: el('new_status').value,
+    tag: el('new_tag').value,
+    selectedHeroes: Array.from(selectedHeroes),
+    selectedSkins: getSelectedSkins()
+  };
+  localStorage.setItem('accountDraft', JSON.stringify(draft));
+  showToast('Đã lưu nháp thành công! 💾', 'success');
+}
+
+function loadDraft() {
+  const draft = JSON.parse(localStorage.getItem('accountDraft') || '{}');
+  clearSelection();
+  
+  el('new_user').value = draft.user || '';
+  el('new_pass').value = draft.pass || '';
+  el('new_price').value = draft.price || '';
+  el('new_img').value = draft.img || '';
+  el('new_status').value = draft.status || 'ON';
+  el('new_tag').value = draft.tag || '';
+  
+  if (draft.selectedHeroes) {
+    draft.selectedHeroes.forEach(hero => {
+      selectedHeroes.add(hero);
+      const checkbox = document.querySelector(`.hero-checkbox[value="${hero}"]`);
+      if (checkbox) checkbox.checked = true;
+    });
+    
+    updateSelectedHeroesDisplay();
+    updateSkinSelectionDisplay();
+    
+    setTimeout(() => {
+      if (draft.selectedSkins) {
+        Object.entries(draft.selectedSkins).forEach(([hero, skins]) => {
+          skins.forEach(skin => {
+            const skinCheckbox = document.querySelector(`.skin-checkbox[data-hero="${hero}"][value="${skin}"]`);
+            if (skinCheckbox) skinCheckbox.checked = true;
+          });
+        });
+      }
+    }, 100);
+  }
+  
+  showToast('Đã tải nháp thành công! 📂', 'success');
+}
+
+// ====== AUTO LOGOUT ======
+function resetLogoutTimer() {
+  if (logoutTimer) clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(() => {
+    showToast('Tự động đăng xuất sau 30 phút không hoạt động', 'warning');
+    logout();
+  }, 30 * 60 * 1000);
+}
 
 // ====== Load users từ GitHub RAW ======
 async function loadUsers(){
@@ -17,7 +1389,7 @@ async function loadUsers(){
   }
 }
 
-// ====== Login function gốc ======
+// ====== Login ======
 async function doLogin(){
   const u = el("login_username").value.trim();
   const p = el("login_password").value;
@@ -43,3 +1415,738 @@ async function doLogin(){
   el("loginCard").style.display = "none";
   startWelcome();
 }
+
+// ====== Welcome overlay flow ======
+function startWelcome(){
+  const overlay = el("loadingOverlay");
+  overlay.style.display = "flex";
+  el("roleMsg").innerText = "";
+  el("chooseAdmin").style.display = "none";
+  el("waitingText").style.display = "none";
+  
+  if(currentUser.role === "admin"){ 
+    el("roleMsg").innerHTML = '<i class="fas fa-crown"></i> Bạn là quản trị viên'; 
+    el("chooseAdmin").style.display = "block"; 
+    el("who1").onclick = ()=>pickWho('Giao Béo'); 
+    el("who2").onclick = ()=>pickWho('Quỳnh Cute'); 
+  } else { 
+    el("roleMsg").innerHTML = '<i class="fas fa-user"></i> Bạn là cộng tác viên'; 
+    el("waitingText").style.display = "block"; 
+    setTimeout(()=>fadeOutOverlay(startApp), 1800); 
+  }
+  startDots();
+}
+
+function pickWho(name){
+  el("chooseAdmin").style.display = "none";
+  el("waitingText").style.display = "block";
+  setTimeout(()=>fadeOutOverlay(startApp), 1200);
+}
+
+function startDots(){
+  const d = el("dots");
+  if(dotsInterval) clearInterval(dotsInterval);
+}
+
+function fadeOutOverlay(cb){
+  const overlay = el("loadingOverlay");
+  overlay.classList.add("fade-out");
+  setTimeout(()=>{ 
+    overlay.style.display = "none"; 
+    overlay.classList.remove("fade-out"); 
+    if(dotsInterval){ 
+      clearInterval(dotsInterval); 
+      dotsInterval = null; 
+    } 
+    cb(); 
+  }, 900);
+}
+
+// ====== FIREBASE ACCOUNTS MANAGEMENT ======
+function listenAccounts(){
+  const accountsRef = ref(db, "accounts");
+  onValue(accountsRef, snapshot => {
+    const val = snapshot.val() || {};
+    accountsCache = val;
+    normalizeMsAndRender();
+    updateStats();
+  });
+}
+
+function normalizeMsAndRender(){
+  const entries = Object.entries(accountsCache);
+  entries.sort((a,b)=> a[0].localeCompare(b[0]));
+  const newCache = {};
+  for(let i=0;i<entries.length;i++){
+    const [k,obj] = entries[i];
+    newCache[k] = Object.assign({}, obj, { ms: String(i+1).padStart(3,'0') });
+  }
+  accountsCache = newCache;
+  render();
+}
+
+// ====== Start app ======
+async function startApp(){
+  el("appCard").style.display = "block";
+  el("roleLabel").innerText = currentUser.role.toUpperCase();
+  if(currentUser.role === "admin") el("adminPanel").style.display = "block"; 
+  else el("adminPanel").style.display = "none";
+  
+  // Load heroes data
+  await loadHeroesData();
+  
+  initTheme();
+  buildHeroSkinUI();
+  listenAccounts(); // KẾT NỐI FIREBASE - DỮ LIỆU SẼ HIỆN LẠI
+  resetLogoutTimer();
+  
+  document.addEventListener('mousemove', resetLogoutTimer);
+  document.addEventListener('keypress', resetLogoutTimer);
+  
+  // Event listeners
+  el("btnAdd").onclick = addAccount;
+  el("btnExport").onclick = exportCSV;
+  el("btnLogout").onclick = logout;
+  el("btnFind").onclick = openFindPanel;
+  el("btnStats").onclick = toggleStats;
+  el("btnManageSkins").onclick = manageSkins;
+  el("btnTheme").onclick = toggleTheme;
+  el("btnImport").onclick = toggleImportSection;
+  el("btnAdvancedFilter").onclick = toggleAdvancedFilter;
+  el("btnApplyFilter").onclick = applyAdvancedFilter;
+  el("btnResetFilter").onclick = resetAdvancedFilter;
+  el("btnMarkHot").onclick = () => bulkMark('hot');
+  el("btnMarkNew").onclick = () => bulkMark('new');
+  el("btnSaveDraft").onclick = saveDraft;
+  el("btnLoadDraft").onclick = loadDraft;
+  el("btnClearSelection").onclick = clearSelection;
+  el("btnParseData").onclick = parseImportData;
+  el("btnImportAccounts").onclick = importAccounts;
+  el("btnClearImport").onclick = clearImport;
+  
+  el("filter").addEventListener("input", debounce(render, 300));
+  
+  if(currentUser.role === "admin") {
+    setInterval(() => {
+      showToast('Tự động backup dữ liệu...', 'info');
+      exportCSV();
+    }, 24 * 60 * 60 * 1000);
+  }
+}
+
+// ====== Debounce search ======
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// ====== Stats Dashboard ======
+function toggleStats() {
+  const stats = el('statsDashboard');
+  stats.style.display = stats.style.display === 'none' ? 'block' : 'none';
+  if (stats.style.display === 'block') updateStats();
+}
+
+function updateStats() {
+  const accounts = Object.values(accountsCache);
+  const total = accounts.length;
+  const available = accounts.filter(a => a.status === 'ON').length;
+  const sold = total - available;
+  const rare = accounts.filter(a => {
+    const skinCount = a.skins ? Object.values(a.skins).flat().length : 0;
+    return skinCount >= 5;
+  }).length;
+
+  el('statTotal').textContent = total;
+  el('statAvailable').textContent = available;
+  el('statSold').textContent = sold;
+  el('statRare').textContent = rare;
+}
+
+// ====== Advanced Filters ======
+function toggleAdvancedFilter() {
+  const filters = el('advancedFilters');
+  filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+}
+
+function applyAdvancedFilter() {
+  render();
+}
+
+function resetAdvancedFilter() {
+  el('filterMinPrice').value = '';
+  el('filterMaxPrice').value = '';
+  el('filterMinSkins').value = '';
+  el('filterStatus').value = '';
+  render();
+}
+
+// ====== Bulk Operations ======
+function bulkMark(tag) {
+  if(!currentUser || currentUser.role !== "admin") return;
+  const selected = Object.entries(accountsCache)
+    .filter(([k, v]) => v.status === 'ON')
+    .slice(0, 5);
+  
+  if (selected.length === 0) {
+    showToast('Không có acc nào để đánh dấu!', 'warning');
+    return;
+  }
+  
+  selected.forEach(([key, account]) => {
+    update(ref(db, "accounts/" + key), { tag: tag });
+  });
+  
+  showToast(`Đã đánh dấu ${selected.length} acc là ${tag.toUpperCase()}`, 'success');
+}
+
+// ====== Skin Management ======
+function manageSkins() {
+  const html = `<h3><i class="fas fa-palette"></i> 🎭 Quản lý Skin</h3>
+    <div style="max-height:400px;overflow-y:auto">
+      ${Object.entries(HERO_SKINS).map(([hero, skins]) => `
+        <div style="margin-bottom:16px;padding:16px;border:2px solid #eef;border-radius:12px;background:rgba(255,255,255,0.8)">
+          <strong>${hero}</strong>
+          <div style="margin-top:12px">
+            ${skins.map(skin => `
+              <label style="display:block;padding:8px 12px;margin:4px;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6">
+                <input type="checkbox" checked> ${skin}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:16px">
+      <button onclick="closePopup()"><i class="fas fa-times"></i> Đóng</button>
+    </div>`;
+  
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+}
+
+// ====== RENDER TABLE (FIREBASE) ======
+function render(){
+  const tbody = document.querySelector("#accTable tbody");
+  const thead = document.querySelector("#accTable thead tr");
+  tbody.innerHTML = "";
+  
+  if(currentUser && currentUser.role === "admin"){ 
+    thead.innerHTML = `
+      <th style="width:60px"><i class="fas fa-hashtag"></i> MS</th>
+      <th><i class="fas fa-user"></i> Username</th>
+      <th><i class="fas fa-key"></i> Password</th>
+      <th><i class="fas fa-tag"></i> Giá</th>
+      <th><i class="fas fa-tshirt"></i> Skin</th>
+      <th style="width:100px"><i class="fas fa-image"></i> Ảnh</th>
+      <th><i class="fas fa-power-off"></i> TT</th>
+      <th style="width:220px"><i class="fas fa-cogs"></i> Hành động</th>
+    `; 
+  } else { 
+    thead.innerHTML = `
+      <th style="width:60px"><i class="fas fa-hashtag"></i> MS</th>
+      <th><i class="fas fa-tag"></i> Giá</th>
+      <th><i class="fas fa-tshirt"></i> Skin</th>
+      <th style="width:100px"><i class="fas fa-image"></i> Ảnh</th>
+      <th><i class="fas fa-power-off"></i> TT</th>
+    `; 
+  }
+  
+  const filterText = (el("filter").value || "").toLowerCase();
+  const minPrice = parseInt(el("filterMinPrice").value) || 0;
+  const maxPrice = parseInt(el("filterMaxPrice").value) || Infinity;
+  const minSkins = parseInt(el("filterMinSkins").value) || 0;
+  const statusFilter = el("filterStatus").value;
+  
+  const arr = Object.entries(accountsCache).map(([k,v])=>({ key:k, ...v }));
+  
+  arr.forEach((a, idx) => {
+    const skinCount = a.skins ? Object.values(a.skins).flat().length : 0;
+    const price = parseInt(a.price) || 0;
+    
+    if (minPrice > 0 && price < minPrice) return;
+    if (maxPrice < Infinity && price > maxPrice) return;
+    if (minSkins > 0 && skinCount < minSkins) return;
+    if (statusFilter && a.status !== statusFilter) return;
+    
+    const flat = ((a.ms||"") + " " + (a.username||"") + " " + (a.price||"") + " " + (skinSummary(a))).toLowerCase();
+    if(filterText && !flat.includes(filterText)) return;
+    
+    const tr = document.createElement("tr");
+    tr.className = a.tag === 'hot' ? 'tr-hot' : a.tag === 'new' ? 'tr-new' : a.status === 'OFF' ? 'tr-sold' : '';
+    
+    if(currentUser.role === "admin"){
+      tr.innerHTML = `
+        <td><strong>${a.ms}</strong></td>
+        <td>${a.username||""}</td>
+        <td>${a.password||""}</td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>
+          ${a.image?'<img class="thumb" src="'+a.image+'" alt="Account image">':""}
+          ${a.image ? `<button class="upload-btn" onclick="downloadImage('${a.image}', '${a.username}')">
+            <i class="fas fa-download"></i> Tải ảnh
+          </button>` : ''}
+        </td>
+        <td>
+          <span class="cute-badge" style="background:${a.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+            ${a.status||"OFF"} ${a.tag ? `(${a.tag === 'hot' ? '🔥' : '🆕'})` : ''}
+          </span>
+        </td>
+        <td>
+          <button data-key="${a.key}" class="btn-edit" style="background:linear-gradient(135deg, #339af0, #228be6)">
+            <i class="fas fa-edit"></i> Sửa
+          </button>
+          <button data-key="${a.key}" class="btn-del" style="background:linear-gradient(135deg, #ff6b6b, #fa5252)">
+            <i class="fas fa-trash"></i> Xóa
+          </button>
+          <button data-key="${a.key}" class="btn-view">
+            <i class="fas fa-eye"></i> Xem
+          </button>
+          <button data-key="${a.key}" class="btn-copy" title="Copy password" style="background:linear-gradient(135deg, #94d82d, #82c91e)">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+        </td>
+      `; 
+    } else {
+      tr.innerHTML = `
+        <td><strong>${a.ms}</strong></td>
+        <td>${a.price||""}</td>
+        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>
+          ${a.image?'<img class="thumb" src="'+a.image+'" alt="Account image">':""}
+          ${a.image ? `<button class="upload-btn" onclick="downloadImage('${a.image}', '${a.username}')">
+            <i class="fas fa-download"></i> Tải ảnh
+          </button>` : ''}
+        </td>
+        <td>
+          <span class="cute-badge" style="background:${a.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+            ${a.status||"OFF"} ${a.tag ? `(${a.tag === 'hot' ? '🔥' : '🆕'})` : ''}
+          </span>
+        </td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+  
+  if(currentUser && currentUser.role === "admin"){
+    document.querySelectorAll(".btn-edit").forEach(b=>b.onclick = e=>openEditForm(b.dataset.key));
+    document.querySelectorAll(".btn-del").forEach(b=>b.onclick = e=>deleteAccountConfirm(b.dataset.key));
+    document.querySelectorAll(".btn-view").forEach(b=>b.onclick = e=>openViewSkin(b.dataset.key));
+    document.querySelectorAll(".btn-copy").forEach(b=>b.onclick = e=>copyPassword(b.dataset.key));
+  }
+}
+
+// ====== ADD ACCOUNT (FIREBASE) ======
+async function addAccount(){
+  if(!currentUser || currentUser.role !== "admin"){ 
+    showToast("Chỉ admin được thêm acc", "error"); 
+    return; 
+  }
+  const u = el("new_user").value.trim();
+  const p = el("new_pass").value;
+  const price = el("new_price").value.trim();
+  const img = el("new_img").value.trim();
+  const status = el("new_status").value;
+  const tag = el("new_tag").value;
+  
+  if(!u || !p){ 
+    showToast("Nhập username + password", "error"); 
+    return; 
+  }
+  
+  if (selectedHeroes.size === 0) {
+    showToast("Vui lòng chọn ít nhất một tướng! 🎯", "warning");
+    return;
+  }
+  
+  const skins = getSelectedSkins();
+  
+  try{
+    const newRef = push(ref(db, "accounts"));
+    await set(newRef, { 
+      username: u, 
+      password: p, 
+      price: price, 
+      image: img, 
+      status: status, 
+      tag: tag,
+      skins: skins,
+      createdAt: new Date().toISOString()
+    });
+    
+    // Reset form
+    el("new_user").value = ""; 
+    el("new_pass").value = ""; 
+    el("new_price").value = ""; 
+    el("new_img").value = "";
+    el("new_status").value = "ON";
+    el("new_tag").value = "";
+    clearSelection();
+    
+    showToast("Thêm tài khoản thành công! 🎉", "success");
+  }catch(e){ 
+    console.error(e); 
+    showToast("Lỗi thêm acc: "+e.message, "error"); 
+  }
+}
+
+// ====== EDIT ACCOUNT (FIREBASE) ======
+function openEditForm(key){
+  const node = accountsCache[key];
+  if(!node) return showToast("Không tìm thấy acc", "error");
+  const html = `
+    <h3><i class="fas fa-edit"></i> Sửa acc MS ${node.ms||''}</h3>
+    <div style="display:grid;gap:12px;margin-top:16px">
+      <div><label><i class="fas fa-user"></i> Username: <input id="edt_user" value="${node.username||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-key"></i> Password: <input id="edt_pass" value="${node.password||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-tag"></i> Giá: <input id="edt_price" value="${node.price||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-image"></i> Ảnh: <input id="edt_img" value="${node.image||''}" style="width:100%"></label></div>
+      <div><label><i class="fas fa-certificate"></i> Tag: 
+        <select id="edt_tag" style="width:100%">
+          <option value="">Không tag</option>
+          <option value="hot">🔥 HOT</option>
+          <option value="new">🆕 NEW</option>
+        </select>
+      </label></div>
+      <div><label><i class="fas fa-power-off"></i> TT: 
+        <select id="edt_status" style="width:100%">
+          <option>ON</option>
+          <option>OFF</option>
+        </select>
+      </label></div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px">
+      <button id="saveEdit" style="flex:1"><i class="fas fa-save"></i> Lưu</button>
+      <button id="cancelEdit" class="ghost" style="flex:1"><i class="fas fa-times"></i> Hủy</button>
+    </div>`;
+  
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+  document.getElementById("edt_status").value = node.status || "OFF";
+  document.getElementById("edt_tag").value = node.tag || "";
+  document.getElementById("cancelEdit").onclick = ()=>el("popup").style.display="none";
+  document.getElementById("saveEdit").onclick = async ()=>{
+    const u = document.getElementById("edt_user").value;
+    const p = document.getElementById("edt_pass").value;
+    const pr = document.getElementById("edt_price").value;
+    const img = document.getElementById("edt_img").value;
+    const tag = document.getElementById("edt_tag").value;
+    const st = document.getElementById("edt_status").value;
+    try{ 
+      await update(ref(db, "accounts/"+key), { 
+        username: u, 
+        password: p, 
+        price: pr, 
+        image: img,
+        tag: tag,
+        status: st 
+      }); 
+      el("popup").style.display="none"; 
+      showToast("Cập nhật thành công! ✅", "success");
+    }catch(e){
+      showToast("Lỗi update: "+e.message, "error");
+    }
+  };
+}
+
+// ====== DELETE ACCOUNT (FIREBASE) ======
+function deleteAccountConfirm(key){
+  if(!confirm("Xóa acc này?")) return;
+  remove(ref(db, "accounts/"+key))
+    .then(() => showToast("Đã xóa acc! 🗑️", "success"))
+    .catch(e=>showToast("Lỗi xóa: "+e.message, "error"));
+}
+
+// ====== VIEW SKIN DETAIL ======
+function openViewSkin(key){
+  const node = accountsCache[key];
+  if(!node) return showToast("Không tìm thấy", "error");
+  let html = `<h3><i class="fas fa-eye"></i> Chi tiết skin MS ${node.ms||''}</h3>`;
+  if(node.skins){
+    for(const h of Object.keys(node.skins)){ 
+      html += `
+        <div style="margin:12px 0;padding:12px;background:rgba(255,255,255,0.8);border-radius:8px">
+          <strong>${h}</strong>
+          <ul style="margin:8px 0;padding-left:20px">
+            ${node.skins[h].map(s=>`<li>${escapeHtml(s)}</li>`).join('')}
+          </ul>
+        </div>
+      `; 
+    }
+  } else html += "<p>Không có skin</p>";
+  html += `<div style="margin-top:16px"><button onclick="closePopup()"><i class="fas fa-times"></i> Đóng</button></div>`;
+  el("popupContent").innerHTML = html;
+  el("popup").style.display = "flex";
+}
+
+// ====== COPY PASSWORD ======
+function copyPassword(key) {
+  const account = accountsCache[key];
+  if (account && account.password) {
+    navigator.clipboard.writeText(account.password).then(() => {
+      showToast('Đã copy password! 📋', 'success');
+    });
+  }
+}
+
+// ====== DOWNLOAD IMAGE ======
+function downloadImage(imageUrl, username) {
+  // Tạo một thẻ a ẩn để tải ảnh
+  const a = document.createElement('a');
+  a.href = imageUrl;
+  a.download = `account_${username}_image.jpg`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast(`Đã tải ảnh của tài khoản ${username}!`, 'success');
+}
+
+// ====== EXPORT CSV ======
+function exportCSV(){
+  const arr = Object.entries(accountsCache).map(([k,v])=>v);
+  const header = ['MS','Username','Password','Price','Skins','Image','Status','Tag'];
+  const rows = [header].concat(arr.map(a=>[
+    a.ms||'', 
+    a.username||'', 
+    (currentUser && currentUser.role==='admin')?a.password:'', 
+    a.price||'', 
+    skinSummary(a), 
+    a.image||'', 
+    a.status||'',
+    a.tag||''
+  ]));
+  const csv = rows.map(r => r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); 
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); 
+  a.href = url; 
+  a.download = `accounts-backup-${new Date().toISOString().split('T')[0]}.csv`; 
+  a.click(); 
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file CSV! 📊', 'success');
+}
+
+// ====== HELPER FUNCTIONS ======
+function skinSummary(a){
+  if(!a.skins) return "";
+  return Object.keys(a.skins).map(h => `${h}(${a.skins[h].length})`).join(", ");
+}
+
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// ====== IMPORT FUNCTIONALITY ======
+function toggleImportSection() {
+  const section = el('importSection');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function parseImportData() {
+  const importData = el('importData').value.trim();
+  if (!importData) {
+    showToast('Vui lòng nhập dữ liệu cần import!', 'error');
+    return;
+  }
+  
+  const lines = importData.split('\n').filter(line => line.trim());
+  const parsedAccounts = [];
+  
+  lines.forEach((line, index) => {
+    try {
+      const account = parseAccountLine(line);
+      if (account) {
+        parsedAccounts.push(account);
+      }
+    } catch (error) {
+      console.error(`Lỗi phân tích dòng ${index + 1}:`, error);
+    }
+  });
+  
+  if (parsedAccounts.length === 0) {
+    showToast('Không thể phân tích dữ liệu từ text!', 'error');
+    return;
+  }
+  
+  showImportPreview(parsedAccounts);
+  el('btnImportAccounts').disabled = false;
+  el('importStatus').textContent = `Đã phân tích ${parsedAccounts.length} tài khoản`;
+  showToast(`Đã phân tích thành công ${parsedAccounts.length} tài khoản!`, 'success');
+}
+
+function parseAccountLine(line) {
+  const parts = line.split(' | ');
+  if (parts.length < 3) return null;
+  
+  // Parse username and password
+  const [user, pass] = parts[0].split(':');
+  if (!user || !pass) return null;
+  
+  const account = {
+    id: Date.now() + Math.random(),
+    user: user.trim(),
+    pass: pass.trim(),
+    status: 'ON',
+    tag: '',
+    img: '',
+    createdAt: new Date().toISOString()
+  };
+  
+  // Parse other fields
+  parts.forEach(part => {
+    if (part.includes('NAME :')) {
+      account.name = part.split('NAME :')[1]?.trim();
+    } else if (part.includes('RANK :')) {
+      account.rank = part.split('RANK :')[1]?.trim();
+    } else if (part.includes('LEVEL :')) {
+      account.level = parseInt(part.split('LEVEL :')[1]) || 0;
+    } else if (part.includes('HERO :')) {
+      account.heroCount = parseInt(part.split('HERO :')[1]) || 0;
+    } else if (part.includes('SKIN :')) {
+      account.skinCount = parseInt(part.split('SKIN :')[1]) || 0;
+    } else if (part.includes('SS :')) {
+      const skinPart = part.split('SS :')[1];
+      if (skinPart) {
+        const skinMatch = skinPart.match(/\[(.*?)\]/);
+        if (skinMatch && skinMatch[1]) {
+          account.skins = skinMatch[1].split(', ').filter(s => s.trim());
+        }
+      }
+    }
+  });
+  
+  // Generate price based on heroes and skins
+  const basePrice = 50000;
+  const heroPrice = (account.heroCount || 0) * 10000;
+  const skinPrice = (account.skinCount || 0) * 5000;
+  const rareSkinBonus = (account.skins?.filter(s => s.includes('Siêu việt') || s.includes('SSS')).length || 0) * 20000;
+  
+  account.price = formatPrice(basePrice + heroPrice + skinPrice + rareSkinBonus);
+  account.info = `Rank: ${account.rank || 'Unknown'} | Level: ${account.level || 0} | Tướng: ${account.heroCount || 0} | Skin: ${account.skinCount || 0}`;
+  
+  return account;
+}
+
+function showImportPreview(parsedAccounts) {
+  const previewList = el('previewList');
+  previewList.innerHTML = '';
+  
+  parsedAccounts.forEach((acc, index) => {
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+    div.innerHTML = `
+      <strong>${index + 1}. ${acc.user}:${acc.pass}</strong><br>
+      <small>${acc.info} | Giá: ${acc.price}</small>
+      ${acc.skins ? `<br><small>Skin: ${acc.skins.slice(0, 3).join(', ')}${acc.skins.length > 3 ? '...' : ''}</small>` : ''}
+    `;
+    previewList.appendChild(div);
+  });
+  
+  el('importPreview').style.display = 'block';
+}
+
+function importAccounts() {
+  // This would be implemented based on your storage system
+  showToast('Chức năng import đang được phát triển!', 'info');
+}
+
+function clearImport() {
+  el('importData').value = '';
+  el('importPreview').style.display = 'none';
+  el('btnImportAccounts').disabled = true;
+  el('importStatus').textContent = '';
+}
+
+// ====== UTILITY FUNCTIONS ======
+function formatPrice(price) {
+  const num = typeof price === 'string' ? parseInt(price.replace(/\./g, '')) : parseInt(price);
+  return isNaN(num) ? '0' : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// ====== FIND PANEL ======
+function openFindPanel(){
+  if(!currentUser || currentUser.role !== 'ctv') return showToast("Chức năng tìm chỉ dành cho CTV", "warning");
+  
+  const html = `
+    <h3><i class="fas fa-search"></i> Tìm Acc</h3>
+    <div style="margin-top:16px">
+      <div style="display:flex;gap:12px;align-items:center">
+        <i class="fas fa-hashtag"></i>
+        <span>Nhập MS (vd: 001):</span>
+        <input id="findMS" style="flex:1">
+        <button id="doFindMS"><i class="fas fa-search"></i> Tìm</button>
+      </div>
+      <div id="findResult" style="margin-top:16px"></div>
+    </div>
+    <div style="margin-top:16px">
+      <button onclick="closePopup()"><i class="fas fa-times"></i> Đóng</button>
+    </div>`;
+  
+  el("popupContent").innerHTML = html; 
+  el("popup").style.display = "flex";
+  
+  el("doFindMS").onclick = ()=>{ 
+    const ms = el("findMS").value.trim(); 
+    const result = Object.values(accountsCache).find(acc => acc.ms === ms);
+    const findResult = el("findResult");
+    
+    if (result) {
+      findResult.innerHTML = `
+        <div style="padding:16px;border-radius:12px;border:2px solid #eef; background:rgba(255,255,255,0.9)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong><i class="fas fa-hashtag"></i> MS: ${result.ms}</strong>
+              <span style="margin-left:16px"><i class="fas fa-tag"></i> Giá: ${result.price}</span>
+            </div>
+            <span class="cute-badge" style="background:${result.status === 'ON' ? 'linear-gradient(135deg, #51cf66, #37b24d)' : 'linear-gradient(135deg, #ff6b6b, #fa5252)'}">
+              ${result.status}
+            </span>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+            ${result.image?'<img src="'+result.image+'" class="thumb" style="flex-shrink:0">':''}
+            <div style="flex:1">
+              <div><strong>Skins:</strong> ${skinSummary(result)}</div>
+              ${result.tag ? `<div style="margin-top:4px"><strong>Tag:</strong> ${result.tag === 'hot' ? '🔥 HOT' : '🆕 NEW'}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      findResult.innerHTML = `
+        <div style="text-align:center;padding:20px;background:rgba(255,255,255,0.8);border-radius:12px">
+          <i class="fas fa-search" style="font-size:48px;color:#ccc;margin-bottom:12px"></i>
+          <div>Không tìm thấy kết quả nào</div>
+        </div>
+      `;
+    }
+  };
+}
+
+// ====== Close popup ======
+function closePopup(){ el("popup").style.display = "none"; }
+
+// ====== Logout ======
+function logout(){ 
+  if (logoutTimer) clearTimeout(logoutTimer);
+  location.reload(); 
+}
+
+// ====== Helpers ======
+el("btnLogin").addEventListener("click", doLogin);
+el("themeSwitch").addEventListener("click", toggleTheme);
+
+// pre-load users
+loadUsers();
+
+// expose functions to global
+window.closePopup = closePopup;
+window.downloadImage = downloadImage;
+</script>
+</body>
+</html>
