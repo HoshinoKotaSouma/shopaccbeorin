@@ -277,9 +277,10 @@ th, td {
   backdrop-filter: blur(10px);
 }
 
+/* FIX: Giảm hiệu ứng hover cho table để không bị chạy lung tung */
 th:hover, td:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] th, 
@@ -810,6 +811,29 @@ img.thumb:hover {
   color: var(--accent);
   animation: dotFlashing 1s infinite linear;
   animation-delay: 1s;
+}
+
+/* FIX: Skin details display */
+.skin-details {
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 5px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+}
+
+.skin-details ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.skin-details li {
+  margin-bottom: 2px;
 }
 </style>
 </head>
@@ -1729,13 +1753,22 @@ function render(){
     const tr = document.createElement("tr");
     tr.className = a.tag === 'hot' ? 'tr-hot' : a.tag === 'new' ? 'tr-new' : a.status === 'OFF' ? 'tr-sold' : '';
     
+    // FIX: Hiển thị đầy đủ thông tin skin thay vì chỉ số lượng
+    const skinDetails = a.skins ? Object.entries(a.skins).map(([hero, skins]) => 
+      `<div><strong>${hero}:</strong> ${skins.join(', ')}</div>`
+    ).join('') : '';
+    
     if(currentUser.role === "admin"){
       tr.innerHTML = `
         <td><strong>${a.ms}</strong></td>
         <td>${a.username||""}</td>
         <td>${a.password||""}</td>
         <td>${a.price||""}</td>
-        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>
+          <div class="skin-details">
+            ${skinDetails || '<span class="muted">Không có skin</span>'}
+          </div>
+        </td>
         <td>
           ${a.image?'<img class="thumb" src="'+a.image+'" alt="Account image">':""}
           ${a.image ? `<button class="upload-btn" onclick="downloadImage('${a.image}', '${a.username}')">
@@ -1766,7 +1799,11 @@ function render(){
       tr.innerHTML = `
         <td><strong>${a.ms}</strong></td>
         <td>${a.price||""}</td>
-        <td>${escapeHtml(skinSummary(a))}</td>
+        <td>
+          <div class="skin-details">
+            ${skinDetails || '<span class="muted">Không có skin</span>'}
+          </div>
+        </td>
         <td>
           ${a.image?'<img class="thumb" src="'+a.image+'" alt="Account image">':""}
           ${a.image ? `<button class="upload-btn" onclick="downloadImage('${a.image}', '${a.username}')">
