@@ -582,7 +582,7 @@
       saveResultsToLocal();
     } catch (e) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
+      if (e.name === 'AbortError') {
         log(`Tài khoản ${username} chạy quá 30 giây, đang thử lại...`, 'warning');
         if (retryCount < 10) {
           return await checkAccount(account, key, signal, retryCount + 1);
@@ -594,30 +594,18 @@
           saveResultsToLocal();
           removeCheckedAccount(account);
         }
-      if (stopCheckingFlag) {
-        log(`⏹️ Kiểm tra bị dừng: ${username}`, 'info');
       } else {
-        if (mode === "newOnly") {
-              allWarnings.push(`${username}|${password}`);
-          }else{
-              allWarnings.push(`${account}`);
-          }
-        warningCount++;
-        log(`⚠️ Lỗi khi kiểm tra tài khoản: ${username}`, 'warning');
-      }
-      } else {
-        log(`⚠️ Lỗi khác khi kiểm tra ${username}: ${e.message}`, 'error');
-      }
-      if (stopCheckingFlag) {
-        log(`⏹️ Kiểm tra bị dừng: ${username}`, 'info');
-      } else {
+        if (stopCheckingFlag) {
+          log(`⏹️ Kiểm tra bị dừng: ${username}`, 'info');
+        } else {
           if (mode === "newOnly") {
-              allWarnings.push(`${username}|${password}`);
-          }else{
-              allWarnings.push(`${account}`);
+            allWarnings.push(`${username}|${password}`);
+          } else {
+            allWarnings.push(`${account}`);
           }
-        warningCount++;
-        log(`⚠️ Lỗi khi kiểm tra tài khoản: ${username}`, 'warning');
+          warningCount++;
+          log(`⚠️ Lỗi khi kiểm tra tài khoản: ${username} - ${e.message}`, 'warning');
+        }
       }
     } finally {
       if (!isReloadRetry) {
